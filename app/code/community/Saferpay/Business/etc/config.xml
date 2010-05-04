@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Saferpay_Business>
+			<version>0.0.1</version>
+		</Saferpay_Business>
+	</modules>
+	<global>
+		<modules>
+			<saferpay>
+				<class>Saferpay_Business_Model</class>
+			</saferpay>
+		</modules>
+		<helpers>
+			<saferpay>
+				<class>Saferpay_Business_Helper</class>
+			</saferpay>
+		</helpers>
+	</global>
+</config>
