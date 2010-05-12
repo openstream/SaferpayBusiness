@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <config>
-    <modules>
-        <Saferpay_Business>
-            <active>true</active>
-            <codePool>community</codePool>
-        </Saferpay_Business>
-    </modules>
+	<modules>
+		<Saferpay_Business>
+			<active>false</active>
+			<codePool>community</codePool>
+		</Saferpay_Business>
+	</modules>
 </config>

@@ -6,15 +6,60 @@
 		</Saferpay_Business>
 	</modules>
 	<global>
-		<modules>
-			<saferpay>
+		<models>
+			<saferpay_be>
 				<class>Saferpay_Business_Model</class>
-			</saferpay>
-		</modules>
+			</saferpay_be>
+		</models>
 		<helpers>
-			<saferpay>
+			<saferpay_be>
 				<class>Saferpay_Business_Helper</class>
-			</saferpay>
+			</saferpay_be>
 		</helpers>
 	</global>
+	<frontend>
+		<routers>
+			<saferpay_be>
+				<use>standard</use>
+				<args>
+					<module>Saferpay_Business</module>
+					<frontName>saferpay</frontName>
+				</args>
+			</saferpay_be>
+		</routers>
+	</frontend>
+	<adminhtml>
+        <translate>
+            <modules>
+                <Saferpay_Business>
+                    <files>
+                        <default>Saferpay_Business.csv</default>
+                    </files>
+                </Saferpay_Business>
+            </modules>
+        </translate>
+	</adminhtml>
+	<default>
+		<payment>
+			<saferpay_scd>
+				<model>saferpay_be/scd</model>
+			</saferpay_scd>
+		</payment>
+		<saferpay>
+			<settings>
+				<saferpay_username></saferpay_username>
+				<saferpay_password></saferpay_password>
+				<saferpay_account_id></saferpay_account_id>
+				<payinit_base_url>https://www.saferpay.com/hosting/CreatePayInit.asp</payinit_base_url>
+				<verify_base_url>https://www.saferpay.com/hosting/VerifyEnrollment.asp</verify_base_url>
+				<execute_base_url>https://www.saferpay.com/hosting/Execute.asp</execute_base_url>
+			</settings>
+			<saferpay_scd>
+				<active>0</active>
+				<model>saferpay_be/scd</model>
+				<title>Credit Card / Visa, Mastercard, AMEX, JCB, Diners</title>
+				<allowspecific>0</allowspecific>
+			</saferpay_scd>
+		</saferpay>
+	</default>
 </config>
