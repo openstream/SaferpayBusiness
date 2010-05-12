@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<config>
+	<sections>
+		<saferpay translate="label" module="saferpay">
+			<label>Saferpay</label>
+			<tab>sales</tab>
+			<frontend_type>text</frontend_type>
+			<sort_order>980</sort_order>
+			<show_in_default>1</show_in_default>
+			<show_in_website>0</show_in_website>
+			<show_in_store>0</show_in_store>
+			<groups>
+				<settings>
+					<label>Saferpay Settings</label>
+					<sort_order>10</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>0</show_in_website>
+					<show_in_store>0</show_in_store>
+					<fields>
+						<saferpay_user translate="label">
+							<label>Username</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>10</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</saferpay_user>
+						<saferpay_password translate="label">
+							<label>Password</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>20</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</saferpay_password>
+						<saferpay_account_id translate="label">
+							<label>Account-ID</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>30</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</saferpay_account_id>
+					</fields>
+				</settings>
+			</groups>
+		</saferpay>
+	</sections>
+</config>

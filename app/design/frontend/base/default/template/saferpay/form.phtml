@@ -1,0 +1,17 @@
+<?php
+$_code = $this->getMethodCode();
+$_img  = $this->getPaymentImageSrc($_code);
+?>
+<ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none">
+    <li>
+        <?php echo Mage::helper('saferpay')->__('You will be redirected to our secure payment page when you place the order.') ?>
+    </li>
+    <?php if ($_img): ?>
+    <li>
+        <div style="padding:10px 15px 15px;">
+            <img src="<?php echo $_img ?>" alt="" /><br />
+        </div>
+    </li>
+    <?php endif; ?>
+</ul>
+
