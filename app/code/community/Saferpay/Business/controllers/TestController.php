@@ -22,9 +22,9 @@ class Saferpay_Business_TestController extends Mage_Core_Controller_Front_Action
 	{
 		$this->loadLayout();
 		$block = $this->getLayout()->createBlock('core/template', 'test')
-			->assign('registerCardUrl', $this->_getPayRequestPath())
-			->assign('saferPayRequestParams', $this->_getPayRequestParams())
-			->setTemplate('saferpay/gettest.phtml');
+			->setTemplate('saferpay/gettest.phtml')
+			->assign('registerCardUrl', $this->_getPayRequestUrl())
+			->assign('saferPayRequestParams', $this->_getPayRequestParams());
 		$this->getLayout()->getBlock('content')->append($block);
 		$this->renderLayout();
 	}
@@ -33,12 +33,12 @@ class Saferpay_Business_TestController extends Mage_Core_Controller_Front_Action
 	{
 		if (! $this->_registerCardUrl)
 		{
-			$this->_registerCardUrl = Mage::getUrl('saferpay/test/success') . '?a=b&c=d';
+			$this->_registerCardUrl = Mage::getUrl('saferpay/test/success');
 
 			$params = array(
 				'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
-				'SUCCESSLINK' => Mage::getUrl('saferpay/test/success', array('_nosid' => 1)),
-				'FAILLINK' => Mage::getUrl('saferpay/test/fail', array('_nosid' => 1)),
+				'SUCCESSLINK' => Mage::getUrl('saferpaybe/test/success', array('_nosid' => 1)),
+				'FAILLINK' => Mage::getUrl('saferpaybe/test/fail', array('_nosid' => 1)),
 				'CARDREFID' => $this->_createCardRefId()
 			);
 			$url = Mage::getStoreConfig('saferpay/settings/payinit_base_url');
@@ -48,7 +48,6 @@ class Saferpay_Business_TestController extends Mage_Core_Controller_Front_Action
 				$url .= sprintf("%s=%s", $k, urlencode($v));
 			}
 			$this->_registerCardUrl = trim(file_get_contents($url));
-			//Mage::log($this->_registerCardUrl);
 		}
 
 		return $this->_registerCardUrl;
@@ -68,9 +67,13 @@ class Saferpay_Business_TestController extends Mage_Core_Controller_Front_Action
 		return $out;
 	}
 
-	protected function _getPayRequestPath()
+	protected function _getPayRequestUrl()
 	{
-		return $this->_getRegisterCardUrl();
+		$url = $this->_getRegisterCardUrl();
+		$info = parse_url($url);
+		$url = $info['scheme'] . '://' . $info['host'] . $info['path'];
+		
+		return $url;
 	}
 
 	public function _createCardRefId()

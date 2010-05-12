@@ -23,7 +23,7 @@
 				<use>standard</use>
 				<args>
 					<module>Saferpay_Business</module>
-					<frontName>saferpay</frontName>
+					<frontName>saferpaybe</frontName>
 				</args>
 			</saferpay_be>
 		</routers>
