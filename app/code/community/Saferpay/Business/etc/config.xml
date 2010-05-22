@@ -6,6 +6,11 @@
 		</Saferpay_Business>
 	</modules>
 	<global>
+		<blocks>
+			<saferpay_be>
+				<class>Saferpay_Business_Block</class>
+			</saferpay_be>
+		</blocks>
 		<models>
 			<saferpay_be>
 				<class>Saferpay_Business_Model</class>
@@ -27,6 +32,13 @@
 				</args>
 			</saferpay_be>
 		</routers>
+		<layout>
+			<updates>
+				<saferpay_be>
+					<file>saferpaybe.xml</file>
+				</saferpay_be>
+			</updates>
+		</layout>
 	</frontend>
 	<adminhtml>
         <translate>
@@ -42,7 +54,10 @@
 	<default>
 		<payment>
 			<saferpay_scd>
+				<active>0</active>
 				<model>saferpay_be/scd</model>
+				<title>Credit Card / Visa, Mastercard, AMEX, JCB, Diners</title>
+				<allowspecific>0</allowspecific>
 			</saferpay_scd>
 		</payment>
 		<saferpay>
@@ -54,12 +69,6 @@
 				<verify_base_url>https://www.saferpay.com/hosting/VerifyEnrollment.asp</verify_base_url>
 				<execute_base_url>https://www.saferpay.com/hosting/Execute.asp</execute_base_url>
 			</settings>
-			<saferpay_scd>
-				<active>0</active>
-				<model>saferpay_be/scd</model>
-				<title>Credit Card / Visa, Mastercard, AMEX, JCB, Diners</title>
-				<allowspecific>0</allowspecific>
-			</saferpay_scd>
 		</saferpay>
 	</default>
 </config>

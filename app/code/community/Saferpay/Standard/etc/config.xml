@@ -46,7 +46,11 @@
 	</adminhtml>
 	<default>
 		<payment>
-			<saferpay_paypal>
+			<saferpay_paypal translate="title" module="saferpay">
+				<active>1</active>
+				<title>Saferpay Paypal</title>
+				<allowspecific>0</allowspecific>
+				<provider_id>1064</provider_id>
 				<model>saferpay/paypal</model>
 			</saferpay_paypal>
 		</payment>
@@ -62,12 +66,6 @@
 				<language_ids_url>https://www.saferpay.com/vt/xml/language.xml</language_ids_url>
 				<default_lang_id>1033</default_lang_id>
 			</settings>
-			<saferpay_paypal translate="title" module="saferpay">
-				<active>1</active>
-				<title>Saferpay Paypal</title>
-				<allowspecific>0</allowspecific>
-				<provider_id>1064</provider_id>
-			</saferpay_paypal>
 		</saferpay>
 	</default>
 </config>

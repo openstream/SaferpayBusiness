@@ -7,7 +7,7 @@
 			<frontend_type>text</frontend_type>
 			<sort_order>980</sort_order>
 			<show_in_default>1</show_in_default>
-			<show_in_website>0</show_in_website>
+			<show_in_website>1</show_in_website>
 			<show_in_store>0</show_in_store>
 			<groups>
 				<settings>
@@ -43,12 +43,16 @@
 						</saferpay_account_id>
 					</fields>
 				</settings>
+			</groups>
+		</saferpay>
+		<payment>
+			<groups>
 				<saferpay_scd>
 					<label>CreditCard-Payments (via Saferpay)</label>
 					<sort_order>20</sort_order>
 					<show_in_default>1</show_in_default>
-					<show_in_website>0</show_in_website>
-					<show_in_store>0</show_in_store>
+					<show_in_website>1</show_in_website>
+					<show_in_store>1</show_in_store>
 					<fields>
 						<active translate="label">
 							<label>Enabled</label>
@@ -59,22 +63,24 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</active>
-						<sort_order translate="label">
-							<label>Sort Order</label>
+						<title translate="label">
+							<label>Title</label>
 							<frontend_type>text</frontend_type>
 							<sort_order>20</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
-							<show_in_store>0</show_in_store>
-						</sort_order>
-						<title translate="label">
-							<label>Title</label>
-							<frontend_type>text</frontend_type>
+							<show_in_store>1</show_in_store>
+						</title>
+						<cctypes translate="label">
+							<label>Credit Card Types</label>
+							<frontend_type>multiselect</frontend_type>
+							<source_model>adminhtml/system_config_source_payment_cctype</source_model>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
-						</title>
+							<can_be_empty>1</can_be_empty>
+						</cctypes>
 						<allowspecific translate="label">
 							<label>Payment from Applicable Countries</label>
 							<frontend_type>allowspecific</frontend_type>
@@ -94,9 +100,17 @@
 							<show_in_store>0</show_in_store>
 							<can_be_empty>1</can_be_empty>
 						</specificcountry>
+						<sort_order translate="label">
+							<label>Sort Order</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>60</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</sort_order>
 					</fields>
 				</saferpay_scd>
 			</groups>
-		</saferpay>
+		</payment>
 	</sections>
 </config>

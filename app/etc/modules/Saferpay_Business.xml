@@ -4,6 +4,9 @@
 		<Saferpay_Business>
 			<active>true</active>
 			<codePool>community</codePool>
+			<depends>
+				<Saferpay_Standard />
+			</depends>
 		</Saferpay_Business>
 	</modules>
 </config>

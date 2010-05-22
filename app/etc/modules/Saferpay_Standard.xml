@@ -4,6 +4,9 @@
 		<Saferpay_Standard>
 			<active>true</active>
 			<codePool>community</codePool>
+			<depends>
+				<Mage_Payment />
+			</depends>
 		</Saferpay_Standard>
 	</modules>
 </config>
