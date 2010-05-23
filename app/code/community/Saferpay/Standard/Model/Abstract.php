@@ -205,8 +205,7 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 		{
 			if (is_null($lang))
 			{
-				$orderLocale = $locale = Mage::getStoreConfig('general/locale/code', $this->getOrder()->getStoreId());
-				$lang = strtolower(substr($orderLocale, 0, 2));
+				$lang = $this->_getOrderLang();
 			}
 			if ($lang)
 			{
@@ -225,6 +224,13 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 
 		$this->setUseDefaultLangId(true);
 		return Mage::helper('saferpay')->getSetting('default_lang_id');
+	}
+
+	protected function _getOrderLang()
+	{
+		$orderLocale = $locale = Mage::getStoreConfig('general/locale/code', $this->getOrder()->getStoreId());
+		$lang = strtolower(substr($orderLocale, 0, 2));
+		return $lang;
 	}
 
 	/**
@@ -266,8 +272,7 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 	 */
 	public function initialize($paymentAction, $stateObject)
 	{
-		$state = Mage_Sales_Model_Order::STATE_PENDING_PAYMENT;
-		$stateObject->setState($state);
+		$stateObject->setState(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT);
 		$stateObject->setStatus(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT);
 		$stateObject->setIsNotified(false);
 	}

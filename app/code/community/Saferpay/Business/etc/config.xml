@@ -58,6 +58,9 @@
 				<model>saferpay_be/scd</model>
 				<title>Credit Card / Visa, Mastercard, AMEX, JCB, Diners</title>
 				<allowspecific>0</allowspecific>
+				<generic_error_msg><![CDATA[An error occured while processing the payment, please try again later.]]></generic_error_msg>
+				<allow_non_enrolled>1</allow_non_enrolled>
+				<payment_action>authorize_capture</payment_action>
 			</saferpay_scd>
 		</payment>
 		<saferpay>

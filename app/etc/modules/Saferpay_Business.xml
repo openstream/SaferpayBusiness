@@ -5,7 +5,7 @@
 			<active>true</active>
 			<codePool>community</codePool>
 			<depends>
-				<Saferpay_Standard />
+				<Mage_Payment />
 			</depends>
 		</Saferpay_Business>
 	</modules>
