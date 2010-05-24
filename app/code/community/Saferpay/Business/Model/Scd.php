@@ -373,10 +373,6 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 			$this->_createInvoice();
 			
 			$this->getOrder()
-				->addStatusHistoryComment(
-					Mage::helper('saferpay_be')->__('%s successfully captured', $this->getOrder()->getGrandTotal())
-				);
-			$this->getOrder()
 				->sendNewOrderEmail()
 				->setEmailSent(true)
 				->save();

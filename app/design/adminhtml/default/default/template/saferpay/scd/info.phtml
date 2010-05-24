@@ -1,0 +1,4 @@
+<?php echo $this->htmlEscape($this->getMethod()->getTitle()) ?><br />
+<?php if ($this->getInfo()->getLastTransId() != ''): ?>
+    <?php echo Mage::helper('saferpay_be')->__('Saferpay Transaction ID: %s', $this->htmlEscape($this->getInfo()->getLastTransId())) ?><br />
+<?php endif; ?>
