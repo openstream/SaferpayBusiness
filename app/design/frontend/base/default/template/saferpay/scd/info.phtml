@@ -1,6 +1,4 @@
 <?php echo $this->htmlEscape($this->getMethod()->getTitle()) ?><br />
-<?php if ($this->getInfo()->getLastTransId() == ''): ?>
-    <em><?php echo Mage::helper('saferpay_be')->__('You will be redirected to our secure payment page when you place the order.') ?></em>
-<?php else: ?>
+<?php if ($this->getInfo()->getLastTransId() != ''): ?>
     <?php echo Mage::helper('saferpay_be')->__('Saferpay Transaction ID: %s', $this->htmlEscape($this->getInfo()->getLastTransId())) ?><br />
 <?php endif; ?>

@@ -68,9 +68,14 @@
 				<saferpay_username></saferpay_username>
 				<saferpay_password></saferpay_password>
 				<saferpay_account_id></saferpay_account_id>
+				<!-- Card registration URL and MPI URL generation: -->
 				<payinit_base_url>https://www.saferpay.com/hosting/CreatePayInit.asp</payinit_base_url>
-				<verify_base_url>https://www.saferpay.com/hosting/VerifyEnrollment.asp</verify_base_url>
+				<!-- Capture and cancel -->
+				<paycomplete_base_url>https://www.saferpay.com/hosting/PayComplete.asp</paycomplete_base_url>
+				<!-- Authorization and credit -->
 				<execute_base_url>https://www.saferpay.com/hosting/Execute.asp</execute_base_url>
+				<!-- MPI status queries -->
+				<verify_base_url>https://www.saferpay.com/hosting/VerifyEnrollment.asp</verify_base_url>
 			</settings>
 		</saferpay>
 	</default>
