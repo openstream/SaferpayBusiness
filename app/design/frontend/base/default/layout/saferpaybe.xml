@@ -2,7 +2,7 @@
 <layout>
 	<checkout_onepage_index>
 		<reference name="head">
-			<action method="addItem"><type>skin_js</type><name>saferpay/business.js</name><params/><if/></action>
+			<action method="addItem"><type>skin_js</type><name>saferpay/business/js/opcheckout.js</name><params/><if/></action>
 		</reference>
 	</checkout_onepage_index>
 </layout>

@@ -42,6 +42,7 @@ Saferpay.Business = Class.create({
 				try {
 					var response = eval('(' + transport.responseText + ')');
 					if (response.redirect) {
+						checkout.setLoadWaiting('review');
 						var url = response.redirect.replace(/___CCNUM___/, saferpay.ccnum).replace(/___CVC___/, saferpay.cvc);
 						location.href = url;
 						return;
