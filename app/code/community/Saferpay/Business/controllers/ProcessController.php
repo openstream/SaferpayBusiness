@@ -99,7 +99,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 			if ($flags->getEci() === Saferpay_Business_Model_Scd::ECI_ENROLLED)
 			{
 				$url = $method->get3DSecureAuthorizeUrl();
-				$this->_redirectUrl($url)->sendHeaders();
+				$this->_redirectUrl($url)->getResponse()->sendHeaders();
 				return;
 			}
 

@@ -223,6 +223,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 	{
 		$params = array(
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
+			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
 			'AMOUNT' => intval(round($this->getOrder()->getGrandTotal(), 2) * 100),
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
 			'MPI_SESSIONID' => $this->getInfoInstance()->getMpiSessionId(),
@@ -233,6 +234,8 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		);
 		$url = Mage::getStoreConfig('saferpay/settings/payinit_base_url');
 		$url = $this->_appendQueryParams($url, $params);
+		//$response = trim(file_get_contents($url));
+		
 		return $url;
 	}
 
@@ -277,6 +280,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 			$response = trim(file_get_contents($url));
 			list($status, $xml) = $this->_splitResponseData($response);
 			$data = $this->_parseResponseXml($xml);
+			Mage::log($data);
 			if (
 				$status != 'OK' ||
 				! isset($data['RESULT']) ||
@@ -430,12 +434,23 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		if (
 			$status != 'OK' ||
 			! isset($data['RESULT']) ||
-			$data['RESULT'] !== '0' ||
 			! isset($data['MSGTYPE']) ||
 			$data['MSGTYPE'] != 'AuthorizationResponse'
 		)
 		{
 			$msg = Mage::helper('saferpay_be')->__('Error parsing response: %s', $response);
+			Mage::throwException($msg);
+		}
+		if ($data['RESULT'] !== '0')
+		{
+			if (isset($data['AUTHMESSAGE']) && $data['AUTHMESSAGE'])
+			{
+				$msg = Mage::helper('saferpay_be')->__($data['AUTHMESSAGE']);
+			}
+			else
+			{
+				$msg = Mage::helper('saferpay_be')->__('Error authorizing payment: %s', $response);
+			}
 			Mage::throwException($msg);
 		}
 		if ($data['ORDERID'] != $this->getOrder()->getRealOrderId())
