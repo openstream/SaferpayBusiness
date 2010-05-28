@@ -2,7 +2,7 @@
 <config>
 	<modules>
 		<Saferpay_Standard>
-			<active>true</active>
+			<active>false</active>
 			<codePool>community</codePool>
 			<depends>
 				<Mage_Payment />

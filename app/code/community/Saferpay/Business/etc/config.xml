@@ -76,6 +76,8 @@
 				<execute_base_url>https://www.saferpay.com/hosting/Execute.asp</execute_base_url>
 				<!-- MPI status queries -->
 				<verify_base_url>https://www.saferpay.com/hosting/VerifyEnrollment.asp</verify_base_url>
+				<!-- Verify Data Signature -->
+				<verifysig_base_url>https://www.saferpay.com/hosting/VerifyPayConfirm.asp</verifysig_base_url>
 			</settings>
 		</saferpay>
 	</default>

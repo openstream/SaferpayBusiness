@@ -145,18 +145,20 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		return $this->_cvcParamName;
 	}
 
+	public function setCvc($cvc)
+	{
+		$this->getSession()->setSpCvc($cvc);
+		return $this;
+	}
+
+	public function getCvc()
+	{
+		return $this->getSession()->getSpCvc();
+	}
+
 	protected function _createCardRefId()
 	{
 		return md5(mt_rand(0, 1000) . microtime());
-	}
-
-	protected function _throwException($msg = null)
-	{
-		if (is_null($msg))
-		{
-			$msg = $this->getConfigData('generic_error_msg');
-		}
-		Mage::throwException(Mage::helper('saferpay_be')->__($msg));
 	}
 
 	public function importRegisterResponseData($data)
@@ -165,13 +167,26 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		
 		$this->validateRegisterResponseData($data);
 
-		$this->getInfoInstance()->addData(array(
+		$this->_addPaymentInfoData(array(
 			'card_ref_id' => $data['CARDREFID'],
 			'card_mask' => $data['CARDMASK'],
 			'card_type' => $data['CARDTYPE'],
 			'card_brand' => $data['CARDBRAND']
 		));
 
+		return $this;
+	}
+
+	protected function _addPaymentInfoData($data, $payment = null)
+	{
+		if (! isset($payment))
+		{
+			$payment = $this->getInfoInstance();
+		}
+		foreach ($data as $k => $v)
+		{
+			$payment->setAdditionalInformation($k, $v);
+		}
 		return $this;
 	}
 
@@ -200,6 +215,74 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		return $this;
 	}
 
+	public function importMpiResponseData($data)
+	{
+		$data = $this->_parseResponseXml($data);
+
+		$this->validateMpiResponseData($data);
+
+		if (isset($data['ECI'])) $this->getInfoInstance()->setAdditionalInformation('eci', $data['ECI']);
+
+		return $this;
+	}
+
+	public function validateMpiResponseData($data)
+	{
+		if (! isset($data['RESULT']))
+		{
+			/*
+			 * Generic error, no error message returned
+			 */
+			$this->_throwException();
+		}
+		elseif ($data['RESULT'] != 0)
+		{
+			if (isset($data['AUTHMESSAGE']))
+			{
+				$msg = $data['AUTHMESSAGE'];
+			}
+			else
+			{
+				$msg = null;
+			}
+			$this->_throwException($msg);
+		}
+		if (! isset($data['MSGTYPE']) || $data['MSGTYPE'] != 'AuthenticationConfirm')
+		{
+			$this->_throwException('Recieved unexpected Message Type: expected "AuthenticationConfirm"');
+		}
+
+		return $this;
+	}
+
+	protected function _throwException($msg = null, $params = null)
+	{
+		if (is_null($msg))
+		{
+			$msg = $this->getConfigData('generic_error_msg');
+		}
+		Mage::throwException(Mage::helper('saferpay_be')->__($msg, $params));
+	}
+
+	public function verifySignature($data, $sig)
+	{
+		Mage::log(__METHOD__);
+		$params = array(
+			'DATA' => $data,
+			'SIGNATURE' => $sig
+		);
+		$url = Mage::getStoreConfig('saferpay/settings/verifysig_base_url');
+		$url = $this->_appendQueryParams($url, $params);
+		$response = trim(file_get_contents($url));
+		list($status, $params) = $this->_splitResponseData($response);
+		if ($status != 'OK')
+		{
+			$this->_throwException('Signature invalid, possible manipulation detected!', $params);
+		}
+		Mage::log('Signature OK');
+		return $this;
+	}
+
 	protected function _getVerify3DSecureUrl()
 	{
 		$expiry = sprintf('%02d%02d',
@@ -209,7 +292,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		$params = array(
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
 			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
-			'CARDREFID' => $this->getInfoInstance()->getCardRefId(),
+			'CARDREFID' => $this->getInfoInstance()->getAdditionalInformation('card_ref_id'),
 			'EXP' => $expiry,
 			'AMOUNT' => round($this->getOrder()->getGrandTotal(), 2),
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
@@ -221,22 +304,33 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 
 	public function get3DSecureAuthorizeUrl()
 	{
+		Mage::log(__METHOD__);
 		$params = array(
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
-			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
+			//'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
 			'AMOUNT' => intval(round($this->getOrder()->getGrandTotal(), 2) * 100),
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
-			'MPI_SESSIONID' => $this->getInfoInstance()->getMpiSessionId(),
+			'MPI_SESSIONID' => $this->getInfoInstance()->getAdditionalInformation('mpi_session_id'),
 			'LANGID' => $this->_getMpiLangId(),
 			'SUCCESSLINK' => Mage::getUrl('saferpaybe/process/mpiSuccess', array('_nosid' => 1)),
 			'FAILLINK' => Mage::getUrl('saferpaybe/process/mpiFail', array('_nosid' => 1)),
 			'BACKLINK' => Mage::getUrl('saferpaybe/process/mpiBack', array('_nosid' => 1)),
+			'DESCRIPTION' => 'Magento ' . Mage::getVersion(),
 		);
+
 		$url = Mage::getStoreConfig('saferpay/settings/payinit_base_url');
 		$url = $this->_appendQueryParams($url, $params);
-		//$response = trim(file_get_contents($url));
+		$response = trim(file_get_contents($url));
+		if (substr($response, 0, 5) === 'ERROR')
+		{
+			Mage::throwException(
+				Mage::helper('saferpay_be')->__('An error occured while processing the payment, unable to initialize 3D Secure MPI: %s',
+					Mage::helper('saferpay_be')->__($response)
+				)
+			);
+		}
 		
-		return $url;
+		return $response;
 	}
 
 	/**
@@ -246,7 +340,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 	 */
 	protected function _splitResponseData($response)
 	{
-		if ($pos = strpos($response, ':') === false)
+		if (($pos = strpos($response, ':')) === false)
 		{
 			$status = $response;
 			$xml = '';
@@ -265,6 +359,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 	 */
 	public function get3DSecureFlags()
 	{
+		Mage::log(__METHOD__);
 		/*
 		 * Default Values
 		 */
@@ -280,25 +375,8 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 			$response = trim(file_get_contents($url));
 			list($status, $xml) = $this->_splitResponseData($response);
 			$data = $this->_parseResponseXml($xml);
-			Mage::log($data);
-			if (
-				$status != 'OK' ||
-				! isset($data['RESULT']) ||
-				$data['RESULT'] !== '0' ||
-				! isset($data['MSGTYPE']) ||
-				$data['MSGTYPE'] != 'VerifyEnrollmentResponse'
-			)
-			{
-				if (isset($data['AUTHMESSAGE']))
-				{
-					$msg = Mage::helper('saferpay_be')->__($data['AUTHMESSAGE']);
-				}
-				else
-				{
-					$msg = Mage::helper('saferpay_be')->__('Error parsing response: %s', $response);
-				}
-				Mage::throwException($msg);
-			}
+			$this->_validate3DSecureInitResponse($status, $data);
+
 			if (isset($data['MPI_SESSIONID'])) $flags->setMpiSessionId($data['MPI_SESSIONID']);
 			if (isset($data['ECI'])) $flags->setEci($data['ECI']);
 			if (isset($data['XID'])) $flags->setXid($data['XID']);
@@ -324,10 +402,44 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 			Mage::logException($e);
 		}
 		
-		$this->getInfoInstance()->addData($flags->getData());
+		$this->_addPaymentInfoData($flags->getData());
 		$this->getOrder()->save();
 		
 		return $flags;
+	}
+
+	protected function _validate3DSecureInitResponse($status, $data)
+	{
+		if (
+			$status != 'OK' ||
+			! isset($data['RESULT']) ||
+			! isset($data['MSGTYPE']) ||
+			$data['MSGTYPE'] != 'VerifyEnrollmentResponse'
+		)
+		{
+			if (isset($data['AUTHMESSAGE']))
+			{
+				$msg = Mage::helper('saferpay_be')->__($data['AUTHMESSAGE']);
+			}
+			else
+			{
+				$msg = Mage::helper('saferpay_be')->__('Error parsing response: %s', $response);
+			}
+			Mage::throwException($msg);
+		}
+		if ($data['RESULT'] !== '0')
+		{
+			if (isset($data['AUTHMESSAGE']) && $data['AUTHMESSAGE'])
+			{
+				$msg = Mage::helper('saferpay_be')->__($data['AUTHMESSAGE']);
+			}
+			else
+			{
+				$msg = Mage::helper('saferpay_be')->__('Error validating card MPI enrollment');
+			}
+			Mage::throwException($msg);
+		}
+		return $this;
 	}
 
 	public function mpiAuthenticationCancelled()
@@ -335,7 +447,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		$this->getOrder()->addStatusHistoryComment(
 			Mage::helper('saferpay_be')->__('3D Secure Authorization cancelled by customer')
 		);
-		$this->getInfoInstance()->addData(array(
+		$this->_addPaymentInfoData(array(
 				'eci' => self::ECI_NONE,
 				'xid' => '',
 		));
@@ -356,7 +468,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 	{
 		Mage::log(__METHOD__);
 		$this->getInfoInstance()->setStatus(self::STATUS_UNKNOWN);
-		if ($this->getInfoInstance()->getEci() === self::ECI_NONE)
+		if ($this->getInfoInstance()->getAdditionalInformation('eci') === self::ECI_NONE)
 		{
 			$this->getOrder()->addStatusHistoryComment(
 				Mage::helper('saferpay_be')->__('3D Secure liability shift not available for this transaction')
@@ -370,7 +482,13 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 			}
 		}
 
+		Mage::log($this->getInfoInstance()->getAdditionalInformation());
+
 		$this->authorize($this->getInfoInstance(), $this->getOrder()->getGrandTotal());
+
+		/*
+		 * Nochmals ECI == 0 prüfen!!
+		 */
 
 		if ($this->getConfigPaymentAction() == self::ACTION_AUTHORIZE_CAPTURE)
 		{
@@ -381,6 +499,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 				->setEmailSent(true)
 				->save();
 		}
+		$this->setCvc(null);
 		
 		return $this;
 	}
@@ -402,18 +521,18 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 			'EXP' => $this->_get4DigitExpiry(),
 			'AMOUNT' => intval(round($amount, 2) * 100),
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
-			'CARDREFID' => $payment->getCardRefId(),
+			'CARDREFID' => $payment->getAdditionalInformation('card_ref_id'),
 			'CVC' => $this->getCvc(),
-			'NAME' => $payment->getCcName(),
+			'NAME' => $payment->getCcOwner(),
 			'ORDERID' => $this->getOrder()->getRealOrderId(),
-			'DESCRIPTION' => $this->getOrder()->getStore()->getWebsite()->getName(),
-			'ECI' => $payment->getEci(),
-			'MPI_SESSIONID' => $payment->getMpiSessionId()
+			'DESCRIPTION' => Mage::getStoreConfig('general/store_information/name', $this->getOrder()->getStoreId()),
+			'ECI' => $payment->getAdditionalInformation('eci'),
+			'MPI_SESSIONID' => $payment->getAdditionalInformation('mpi_session_id'),
 		);
-		if ($payment->getEci() == self::ECI_ENROLLED)
+		if ($payment->getAdditionalInformation('eci') == self::ECI_ENROLLED)
 		{
-			$params['XID'] = $payment->getXid();
-			$params['CAVV'] = $payment->getCavv();
+			$params['XID'] = $payment->getAdditionalInformation('xid');
+			$params['CAVV'] = $payment->getAdditionalInformation('cavv');
 		}
 		if ($ip = Mage::app()->getRequest()->getServer('REMOTE_ADDR'))
 		{
@@ -428,9 +547,35 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 	{
 		Mage::log(__METHOD__);
 		$url = $this->_getAuthorizeUrl($payment, $amount);
+		Mage::log($url);
 		$response = trim(file_get_contents($url));
+		Mage::log($response);
 		list($status, $xml) = $this->_splitResponseData($response);
+		if ($status != 'OK')
+		{
+			$this->_throwException($xml);
+		}
 		$data = $this->_parseResponseXml($xml);
+		$this->_validateAuthorizationResponse($status, $data);
+
+		$this->_addPaymentInfoData(array(
+				'transaction_id' => $data['ID'],
+				'auth_code' => $data['AUTHCODE'],
+			), $payment);
+
+		$payment->setStatus(self::STATUS_APPROVED)
+			->setIsTransactionClosed(0);
+
+		$amount = Mage::helper('core')->formatPrice(round($amount, 2), false);
+		$this->getOrder()->addStatusHistoryComment(
+				Mage::helper('saferpay_be')->__('Authorization for %s successfull (AUTHCODE %s, ID %s)', $amount, $data['AUTHCODE'], $data['ID'])
+			)->save();
+
+		return $this;
+	}
+
+	protected function _validateAuthorizationResponse($status, $data)
+	{
 		if (
 			$status != 'OK' ||
 			! isset($data['RESULT']) ||
@@ -461,18 +606,6 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 			);
 			Mage::throwException($msg);
 		}
-		$payment->addData(array(
-				'transaction_id' => $data['ID'],
-				'auth_code' => $data['AUTHCODE'],
-			))
-			->setStatus(self::STATUS_APPROVED)
-			->setIsTransactionClosed(0);
-
-		$amount = Mage::helper('core')->formatPrice(round($amount, 2), false);
-		$this->getOrder()->addStatusHistoryComment(
-				Mage::helper('saferpay_be')->__('Authorization for %s successfull (AUTHCODE %s, ID %s)', $amount, $data['AUTHCODE'], $data['ID'])
-			)->save();
-
 		return $this;
 	}
 
@@ -503,8 +636,16 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		Mage::log(__METHOD__);
 		$url = $this->_getCaptureUrl($payment, $amount);
 		$response = trim(file_get_contents($url));
-		Mage::log('Response: ' . $response);
+		Mage::log('Capture Response: ' . $response);
 		list($status, $xml) = $this->_splitResponseData($response);
+		$data = $this->_parseResponseXml($xml);
+		$this->_validateCaptureResponse($status, $data);
+		
+		return $this;
+	}
+
+	protected function _validateCaptureResponse($status, $data)
+	{
 		if (
 			$status != 'OK'
 		)
@@ -516,7 +657,6 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 				)->save();
 			Mage::throwException($msg);
 		}
-		
 		return $this;
 	}
 

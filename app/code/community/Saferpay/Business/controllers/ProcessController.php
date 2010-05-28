@@ -62,7 +62,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		Mage::log(__METHOD__);
 		try
 		{
-			Mage::log($this->getRequest()->getParams());
+			$this->_verifySignature();
 			$this->_getScdPayment()->importMpiResponseData($this->getRequest()->getParam('DATA', ''));
 			$this->_executePayment();
 			return;
@@ -92,6 +92,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		Mage::log(__METHOD__);
 		try
 		{
+			$this->_verifySignature();
 			$method = $this->_getScdPayment();
 			$method->importRegisterResponseData($this->getRequest()->getParam('DATA', ''));
 			$method->setCvc($this->getRequest()->getParam($method->getCvcParamName(), ''));
@@ -124,6 +125,15 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 			);
 		}
 		$this->_redirect('checkout/cart');
+	}
+
+	protected function _verifySignature()
+	{
+		$this->_getScdPayment()->verifySignature(
+			$this->getRequest()->getParam('DATA', ''),
+			$this->getRequest()->getParam('SIGNATURE', '')
+		);
+		return $this;
 	}
 
 	protected function _executePayment()

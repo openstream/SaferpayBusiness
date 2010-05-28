@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config>
 	<sections>
-		<saferpay translate="label" module="saferpay">
+		<saferpay translate="label" module="saferpay_be">
 			<label>Saferpay</label>
 			<tab>sales</tab>
 			<frontend_type>text</frontend_type>
@@ -47,7 +47,7 @@
 		</saferpay>
 		<payment>
 			<groups>
-				<saferpay_scd>
+				<saferpay_scd translate="label" module="saferpay_be">
 					<label>CreditCard-Payments (via Saferpay)</label>
 					<sort_order>20</sort_order>
 					<show_in_default>1</show_in_default>
