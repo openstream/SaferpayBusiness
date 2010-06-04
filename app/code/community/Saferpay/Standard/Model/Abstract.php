@@ -16,14 +16,14 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 	 * Availability options
 	 */
 	protected $_isGateway              = true;
-	protected $_canAuthorize           = true;
+	protected $_canAuthorize           = false;
 	protected $_canCapture             = true;
-	protected $_canCapturePartial      = true;
+	protected $_canCapturePartial      = false;
 	protected $_canRefund              = false;
 	protected $_canVoid                = false;
 	protected $_canUseInternal         = false;
 	protected $_canUseCheckout         = true;
-	protected $_canUseForMultishipping = true;
+	protected $_canUseForMultishipping = false;
 
     protected $_order;
 
@@ -61,19 +61,6 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 	}
 
 	/**
-	 * Retrieve information from saferpay payment configuration
-	 *
-	 * @param   string $field
-	 * @return  mixed
-	 */
-	public function getConfigData($field, $storeId = null)
-	{
-		$base = $field == 'model' ? 'payment' : 'saferpay';
-		$path = $base . '/' . $this->getCode() . '/' . $field;
-		return Mage::getStoreConfig($path, $storeId);
-	}
-
-	/**
 	 * Return the payment provider id
 	 *
 	 * @return string
@@ -89,17 +76,6 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 	 * @return string
 	 */
 	public function getOrderPlaceRedirectUrl()
-	{
-		$url = $this->getPayUrl();
-		return $url;
-	}
-
-	/**
-	 * Get the payment url returned by the PayInit API call
-	 *
-	 * @return string
-	 */
-	public function getPayUrl()
 	{
 		$url = $this->getPayInitUrl();
 		foreach ($this->getPayInitFields() as $key => $value)

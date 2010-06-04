@@ -46,6 +46,28 @@
 	</adminhtml>
 	<default>
 		<payment>
+			<!-- GiroPay, eps, iDeal, Postfinance, PayPal, Maestro Online und ELV Online -->
+			<saferpay_giropay translate="title" module="saferpay">
+				<active>1</active>
+				<title>Saferpay GiroPay</title>
+				<allowspecific>0</allowspecific>
+				<provider_id>631</provider_id>
+				<model>saferpay/giropay</model>
+			</saferpay_giropay>
+			<saferpay_eps translate="title" module="saferpay">
+				<active>1</active>
+				<title>Saferpay EPS</title>
+				<allowspecific>0</allowspecific>
+				<provider_id>555</provider_id>
+				<model>saferpay/eps</model>
+			</saferpay_eps>
+			<saferpay_ideal translate="title" module="saferpay">
+				<active>1</active>
+				<title>Saferpay iDeal</title>
+				<allowspecific>0</allowspecific>
+				<provider_id>555</provider_id>
+				<model>saferpay/ideal</model>
+			</saferpay_ideal>
 			<saferpay_paypal translate="title" module="saferpay">
 				<active>1</active>
 				<title>Saferpay Paypal</title>
@@ -53,18 +75,40 @@
 				<provider_id>1064</provider_id>
 				<model>saferpay/paypal</model>
 			</saferpay_paypal>
+			<saferpay_maestro translate="title" module="saferpay">
+				<active>1</active>
+				<title>Saferpay Maestro Online</title>
+				<allowspecific>0</allowspecific>
+				<provider_id>1013</provider_id>
+				<model>saferpay/maestro</model>
+			</saferpay_maestro>
+			<saferpay_elv translate="title" module="saferpay">
+				<active>1</active>
+				<title>Saferpay ELV Online</title>
+				<allowspecific>0</allowspecific>
+				<provider_id>352</provider_id>
+				<model>saferpay/elv</model>
+			</saferpay_elv>
 		</payment>
 		<saferpay>
 			<settings>
 				<saferpay_username></saferpay_username>
 				<saferpay_password></saferpay_password>
 				<saferpay_account_id></saferpay_account_id>
+				<!-- Card registration URL and MPI URL generation: -->
 				<payinit_base_url>https://www.saferpay.com/hosting/CreatePayInit.asp</payinit_base_url>
-				<verify_base_url>https://www.saferpay.com/hosting/VerifyEnrollment.asp</verify_base_url>
+				<!-- Capture and cancel -->
+				<paycomplete_base_url>https://www.saferpay.com/hosting/PayComplete.asp</paycomplete_base_url>
+				<!-- Authorization and credit -->
 				<execute_base_url>https://www.saferpay.com/hosting/Execute.asp</execute_base_url>
+				<!-- MPI status queries -->
+				<verify_base_url>https://www.saferpay.com/hosting/VerifyEnrollment.asp</verify_base_url>
+				<!-- Verify Data Signature -->
+				<verifysig_base_url>https://www.saferpay.com/hosting/VerifyPayConfirm.asp</verifysig_base_url>
+
 				<!-- See https://www.saferpay.com/vt/xml/language.xml -->
 				<language_ids_url>https://www.saferpay.com/vt/xml/language.xml</language_ids_url>
-				<default_lang_id>1033</default_lang_id>
+				<default_lang_id>1033</default_lang_id><!-- 1033 = english -->
 			</settings>
 		</saferpay>
 	</default>
