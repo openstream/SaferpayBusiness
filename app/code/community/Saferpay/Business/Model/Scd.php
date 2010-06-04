@@ -280,7 +280,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		list($status, $params) = $this->_splitResponseData($response);
 		if ($status != 'OK')
 		{
-			$this->_throwException('Signature invalid, possible manipulation detected!', $params);
+			$this->_throwException('Signature invalid, possible manipulation detected! Validation Result: "%s"', $response);
 		}
 		Mage::log('Signature OK');
 		return $this;
@@ -448,7 +448,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 	public function mpiAuthenticationCancelled()
 	{
 		$this->getOrder()->addStatusHistoryComment(
-			Mage::helper('saferpay_be')->__('3D Secure Authorization cancelled by customer')
+			Mage::helper('saferpay_be')->__('3D-Secure Authorization cancelled by customer')
 		);
 		$this->_addPaymentInfoData(array(
 				'eci' => self::ECI_NONE,
@@ -474,7 +474,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		if ($this->getInfoInstance()->getAdditionalInformation('eci') === self::ECI_NONE)
 		{
 			$this->getOrder()->addStatusHistoryComment(
-				Mage::helper('saferpay_be')->__('3D Secure liability shift not available for this transaction')
+				Mage::helper('saferpay_be')->__('3D-Secure liability shift not available for this transaction')
 			)->save();
 			if (! $this->getConfigData('allow_non_enrolled'))
 			{

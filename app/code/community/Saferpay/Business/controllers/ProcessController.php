@@ -48,7 +48,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 			Mage::logException($e);
 			Mage::helper('checkout')->sendPaymentFailedEmail(
 				$this->_getSession()->getQuote(),
-				Mage::helper('saferpay_be')->__("An error occures while processing the payment: %s\n", print_r($e, 1))
+				Mage::helper('saferpay_be')->__("An error occures while processing the payment: %s", print_r($e, 1)) . "\n"
 			);
 			$this->_getSession()->addError(
 				Mage::helper('saferpay_be')->__('An error occured while processing the payment, please contact the store owner for assistance.')
@@ -78,7 +78,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 			Mage::logException($e);
 			Mage::helper('checkout')->sendPaymentFailedEmail(
 				$this->_getSession()->getQuote(),
-				Mage::helper('saferpay_be')->__("An error occures while processing the payment: %s\n", print_r($e, 1))
+				Mage::helper('saferpay_be')->__("An error occures while processing the payment: %s", print_r($e, 1))
 			);
 			$this->_getSession()->addError(
 				Mage::helper('saferpay_be')->__('An error occured while processing the payment, please contact the store owner for assistance.')
@@ -118,7 +118,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 			Mage::logException($e);
 			Mage::helper('checkout')->sendPaymentFailedEmail(
 				$this->_getSession()->getQuote(),
-				Mage::helper('saferpay_be')->__("An error occures while processing the payment: %s\n", print_r($e, 1))
+				Mage::helper('saferpay_be')->__("An error occures while processing the payment: %s", print_r($e, 1))
 			);
 			$this->_getSession()->addError(
 				Mage::helper('saferpay_be')->__('An error occured while processing the payment, please contact the store owner for assistance.')
@@ -157,7 +157,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 			Mage::logException($e);
 			Mage::helper('checkout')->sendPaymentFailedEmail(
 				$this->_getSession()->getQuote(),
-				Mage::helper('saferpay_be')->__("An error occures while processing the payment: %s\n", print_r($e, 1))
+				Mage::helper('saferpay_be')->__("An error occures while processing the payment: %s", print_r($e, 1))
 			);
 			$this->_getSession()->addError(
 				Mage::helper('saferpay_be')->__('An error occured while processing the payment, please contact the store owner for assistance.')
