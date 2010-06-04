@@ -170,6 +170,11 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		$this->_redirect('checkout/cart');
 	}
 
+	/**
+	 * 
+	 *
+	 * @return Saferpay_Business_Model_Scd
+	 */
 	protected function _getScdPayment()
 	{
 		if (is_null($this->_scd))
