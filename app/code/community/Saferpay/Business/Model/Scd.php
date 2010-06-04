@@ -384,6 +384,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 			if (isset($data['ECI'])) $flags->setEci($data['ECI']);
 			if (isset($data['XID'])) $flags->setXid($data['XID']);
 			if (isset($data['CAVV'])) $flags->setCavv($data['CAVV']);
+			Mage::log('ECI: ' . $flags->getEci());
 		}
 		catch (Exception $e)
 		{
@@ -467,29 +468,51 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		return $lang;
 	}
 
-	public function execute()
+	protected function _checkAllowPaymentsWithoutLiabilityShift()
 	{
-		Mage::log(__METHOD__);
-		$this->getInfoInstance()->setStatus(self::STATUS_UNKNOWN);
 		if ($this->getInfoInstance()->getAdditionalInformation('eci') === self::ECI_NONE)
 		{
-			$this->getOrder()->addStatusHistoryComment(
-				Mage::helper('saferpay_be')->__('3D-Secure liability shift not available for this transaction')
-			)->save();
 			if (! $this->getConfigData('allow_non_enrolled'))
 			{
 				$this->getInfoInstance()->setStatus(self::STATUS_ERROR);
 				Mage::throwException(
 					Mage::helper('saferpay_be')->__('The credit card is not enrolled in the 3D-Secure program. Please contact the institution issuing your card for further information.')
 				);
+				return false;
 			}
+		}
+		return true;
+	}
+
+	public function execute()
+	{
+		Mage::log(__METHOD__);
+		$this->getInfoInstance()->setStatus(self::STATUS_UNKNOWN);
+		$eciStatus = $this->getInfoInstance()->getAdditionalInformation('eci');
+		if ($eciStatus === self::ECI_NONE)
+		{
+			$this->getOrder()->addStatusHistoryComment(
+				Mage::helper('saferpay_be')->__('3D-Secure liability shift not available for this transaction')
+			)->save();
+			
+			$this->_checkAllowPaymentsWithoutLiabilityShift();
 		}
 
 		$this->authorize($this->getInfoInstance(), $this->getOrder()->getGrandTotal());
 
 		/*
-		 * Nochmals ECI == 0 prüfen!!
+		 * Again, check if ECI == 0! ECI state can change during authorization.
 		 */
+		if ($this->getInfoInstance()->getAdditionalInformation('eci') === self::ECI_NONE)
+		{
+			if ($eciStatus != self::ECI_NONE)
+			{
+				$this->getOrder()->addStatusHistoryComment(
+					Mage::helper('saferpay_be')->__('3D-Secure liability shift disabled during authorization request')
+				)->save();
+			}
+			$this->_checkAllowPaymentsWithoutLiabilityShift();
+		}
 
 		if ($this->getConfigPaymentAction() == self::ACTION_AUTHORIZE_CAPTURE)
 		{
@@ -543,11 +566,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		$url = $this->_appendQueryParams($url, $params);
 		return $url;
 	}
-	// OK
-	// https://www.saferpay.com/hosting/Execute.asp?ACCOUNTID=99867-94913159&spPassword=XAjc3Kna&EXP=0513&AMOUNT=1989&CURRENCY=EUR&CARDREFID=bcc5834dc0dd90ff641f1758ddc5e8af&CVC=123&NAME=Max+MinaTesto&ORDERID=100000133&DESCRIPTION=Saferpay+Dev&ECI=2&MPI_SESSIONID=7KCj58Azr9AztAfC1p6fbK3CMv7A&IP=127.0.0.1
-	// NOPE:
-	// https://www.saferpay.com/hosting/Execute.asp?ACCOUNTID=99867-94913159&spPassword=XAjc3Kna&EXP=0513&AMOUNT=2652&CURRENCY=EUR&CARDREFID=3f0bbc5af29d0e00fbf4fa063433d410&CVC=123&NAME=Max+MinaTesto&ORDERID=100000134&DESCRIPTION=Saferpay+Dev&ECI=1&MPI_SESSIONID=99fl0tA9x7OSUApt4UEtbAEU5nzA&XID=bW0KcQJaAiILBDcJdx4EeHw7Lwk%3D&CAVV=&IP=127.0.0.1
-
+	
 	public function authorize(Varien_Object $payment, $amount)
 	{
 		Mage::log(__METHOD__);
@@ -562,6 +581,11 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		}
 		$data = $this->_parseResponseXml($xml);
 		$this->_validateAuthorizationResponse($status, $data);
+
+		/*
+		 * ECI Response übernehmen wenn gesetzt
+		 */
+		if (isset($data['ECI'])) $this->getInfoInstance()->setAdditionalInformation('eci', $data['ECI']);
 
 		$this->_addPaymentInfoData(array(
 				//'transaction_id' => $data['ID'],

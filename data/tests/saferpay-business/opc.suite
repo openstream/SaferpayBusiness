@@ -11,7 +11,7 @@
 <tr><td><a href="visaok.test">visa1</a></td></tr>
 <tr><td><a href="visa3ds.test">visa3ds</a></td></tr>
 <tr><td><a href="sptestcard1.test">sptestcard1</a></td></tr>
-<tr><td><a href="sptestcard2.test">sptestcard2</a></td></tr>
+<tr><td><a href="sptestcard2.test">sptestcard2-auth-err</a></td></tr>
 <tr><td><a href="sptestcard3ds.test">sptestcard3ds</a></td></tr>
 <tr><td><a href="mastercard1.test">mastercard1</a></td></tr>
 <tr><td><a href="mastercard3ds.test">mastercard3ds</a></td></tr>
