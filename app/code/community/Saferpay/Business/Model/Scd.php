@@ -6,6 +6,9 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 	const ECI_NOT_ENROLLED = '2';
 	const ECI_NONE = '0';
 
+	const DEFAULT_XID = '--';
+	const DEFAULT_CAVV = '--';
+
 	protected $_code = 'saferpay_scd';
 
 	protected $_formBlockType = 'saferpay_be/form';
@@ -366,8 +369,8 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		$flags = new Varien_Object(array(
 			'mpi_session_id' => '',
 			'eci' => self::ECI_NONE,
-			'xid' => '',
-			'cavv' => '',
+			'xid' => self::DEFAULT_XID,
+			'cavv' => self::DEFAULT_CAVV,
 		));
 		try
 		{
@@ -449,7 +452,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		);
 		$this->_addPaymentInfoData(array(
 				'eci' => self::ECI_NONE,
-				'xid' => '',
+				'xid' => self::DEFAULT_XID,
 		));
 		return $this;
 	}
@@ -481,8 +484,6 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 				);
 			}
 		}
-
-		Mage::log($this->getInfoInstance()->getAdditionalInformation());
 
 		$this->authorize($this->getInfoInstance(), $this->getOrder()->getGrandTotal());
 
@@ -542,6 +543,10 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		$url = $this->_appendQueryParams($url, $params);
 		return $url;
 	}
+	// OK
+	// https://www.saferpay.com/hosting/Execute.asp?ACCOUNTID=99867-94913159&spPassword=XAjc3Kna&EXP=0513&AMOUNT=1989&CURRENCY=EUR&CARDREFID=bcc5834dc0dd90ff641f1758ddc5e8af&CVC=123&NAME=Max+MinaTesto&ORDERID=100000133&DESCRIPTION=Saferpay+Dev&ECI=2&MPI_SESSIONID=7KCj58Azr9AztAfC1p6fbK3CMv7A&IP=127.0.0.1
+	// NOPE:
+	// https://www.saferpay.com/hosting/Execute.asp?ACCOUNTID=99867-94913159&spPassword=XAjc3Kna&EXP=0513&AMOUNT=2652&CURRENCY=EUR&CARDREFID=3f0bbc5af29d0e00fbf4fa063433d410&CVC=123&NAME=Max+MinaTesto&ORDERID=100000134&DESCRIPTION=Saferpay+Dev&ECI=1&MPI_SESSIONID=99fl0tA9x7OSUApt4UEtbAEU5nzA&XID=bW0KcQJaAiILBDcJdx4EeHw7Lwk%3D&CAVV=&IP=127.0.0.1
 
 	public function authorize(Varien_Object $payment, $amount)
 	{
@@ -559,9 +564,10 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		$this->_validateAuthorizationResponse($status, $data);
 
 		$this->_addPaymentInfoData(array(
-				'transaction_id' => $data['ID'],
+				//'transaction_id' => $data['ID'],
 				'auth_code' => $data['AUTHCODE'],
 			), $payment);
+		$payment->setTransactionId($data['ID']);
 
 		$payment->setStatus(self::STATUS_APPROVED)
 			->setIsTransactionClosed(0);
@@ -614,7 +620,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		$params = array(
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
 			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
-			'ID' => $payment->getTransactionId(),
+			'ID' => $payment->getTransactionId(), // $payment->getAdditionalInformation('transaction_id');
 			'AMOUNT' => intval(round($amount, 2) * 100),
 			'ACTION' => 'Settlement',
 		);
