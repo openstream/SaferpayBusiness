@@ -64,9 +64,20 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		{
 			if ($id = $this->getSession()->getLastOrderId())
 			{
+				/*
+				 * Frontend capture
+				 */
 				$this->_order = Mage::getModel('sales/order')->load($id);
 			}
+			else
+			{
+				/*
+				 * Adminhtml capture
+				 */
+				$this->_order = $this->getInfoInstance()->getOrder();
+			}
 		}
+		
 		return $this->_order;
 	}
 
@@ -176,6 +187,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 			'card_type' => $data['CARDTYPE'],
 			'card_brand' => $data['CARDBRAND']
 		));
+		$this->getInfoInstance()->setCcLast4(substr($data['CARDMASK'], -4));
 
 		return $this;
 	}
@@ -588,10 +600,9 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		if (isset($data['ECI'])) $this->getInfoInstance()->setAdditionalInformation('eci', $data['ECI']);
 
 		$this->_addPaymentInfoData(array(
-				//'transaction_id' => $data['ID'],
+				'transaction_id' => $data['ID'],
 				'auth_code' => $data['AUTHCODE'],
 			), $payment);
-		$payment->setTransactionId($data['ID']);
 
 		$payment->setStatus(self::STATUS_APPROVED)
 			->setIsTransactionClosed(0);
@@ -599,9 +610,16 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		$amount = Mage::helper('core')->formatPrice(round($amount, 2), false);
 		$this->getOrder()->addStatusHistoryComment(
 				Mage::helper('saferpay_be')->__('Authorization for %s successfull (AUTHCODE %s, ID %s)', $amount, $data['AUTHCODE'], $data['ID'])
-			)->save();
+			)->save(); // save history model
+		
+		$this->getOrder()->save();
 
 		return $this;
+	}
+
+	public function getTransactionId()
+	{
+		return $this->getInfoInstance()->getAdditionalInformation('transaction_id');
 	}
 
 	protected function _validateAuthorizationResponse($status, $data)
@@ -644,7 +662,8 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 		$params = array(
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
 			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
-			'ID' => $payment->getTransactionId(), // $payment->getAdditionalInformation('transaction_id');
+			'ID' => $payment->getAdditionalInformation('transaction_id'),
+			'ORDERID' => $this->getOrder()->getRealOrderId(),
 			'AMOUNT' => intval(round($amount, 2) * 100),
 			'ACTION' => 'Settlement',
 		);
@@ -699,8 +718,8 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 	public function cancel(Varien_Object $payment)
 	{
 		$payment->setStatus(self::STATUS_DECLINED)
-			->setTransactionId($this->getTransactionId())
 			->setIsTransactionClosed(1);
+		$payment->setAdditionalInformation('transaction_id', $this->getTransactionId());
 
 		return $this;
 	}
