@@ -462,7 +462,7 @@ class Saferpay_Business_Model_Scd extends Mage_Payment_Model_Method_Abstract
 	{
 		$this->getOrder()->addStatusHistoryComment(
 			Mage::helper('saferpay_be')->__('3D-Secure Authorization cancelled by customer')
-		);
+		)->save();
 		$this->_addPaymentInfoData(array(
 				'eci' => self::ECI_NONE,
 				'xid' => self::DEFAULT_XID,
