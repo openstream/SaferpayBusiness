@@ -89,6 +89,13 @@
 				<provider_id>352</provider_id>
 				<model>saferpay/elv</model>
 			</saferpay_elv>
+			<saferpay_postfinance translate="title" module="saferpay">
+				<active>1</active>
+				<title>Saferpay Postfinance</title>
+				<allowspecific>0</allowspecific>
+				<provider_id>384</provider_id>
+				<model>saferpay/postfinance</model>
+			</saferpay_postfinance>
 		</payment>
 		<saferpay>
 			<settings>

@@ -83,7 +83,10 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 			$url .= strpos($url, '?') !== false ? '&' : '?';
 			$url .= $key . '=' . urlencode($value);
 		}
+		Mage::log($this->getPayInitFields());
+		Mage::log($url);
 		$result = trim(file_get_contents($url));
+		Mage::log(urldecode($result));
 		return $result;
 	}
 
@@ -140,13 +143,13 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 
 		$params = array(
 			'ACCOUNTID'             => Mage::helper('saferpay')->getSetting('saferpay_account_id'),
-			'AMOUNT'                => round($this->getOrder()->getGrandTotal(), 2),
+			'AMOUNT'                => intval(round($this->getOrder()->getGrandTotal(), 2) * 100),
 			'CURRENCY'              => $this->getOrder()->getOrderCurrencyCode(),
 			'DESCRIPTION'           => $this->getOrder()->getStore()->getWebsite()->getName(),
 			'CCCVC'                 => 'yes',
 			'CCNAME'                => 'yes',
 			'ORDERID'               => $orderId,
-			'SUCCSESSLINK'          => Mage::getUrl('saferpay/processing/success', array('id' => $orderId)),
+			'SUCCESSLINK'           => Mage::getUrl('saferpay/processing/success', array('id' => $orderId)),
 			'BACKLINK'              => Mage::getUrl('saferpay/processing/back', array('id' => $orderId)),
 			'FAILLINK'              => Mage::getUrl('saferpay/processing/fail', array('id' => $orderId)),
 			'NOTIFYURL'             => Mage::getUrl('saferpay/processing/notify', array('id' => $orderId)),
