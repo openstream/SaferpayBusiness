@@ -1,7 +1,7 @@
 "Saferpay","Saferpay"
 "Saferpay Settings","Saferpay Einstellungen"
 "Username","Benutzername"
-"Passwort","Passwort"
+"Hosting Password","Hosting-Passwort"
 "Account-ID","Account-ID"
 "CreditCard-Payments (via Saferpay)","Kreditkarten-Zahlungen (via Saferpay)"
 "Enabled","Aktiv"
@@ -24,10 +24,13 @@
 "Error validating card MPI enrollment","Fehler beim Überprüfen der 3D-Secure Teilnahme"
 "3D-Secure Authorization cancelled by customer","3D-Secure Autorisation durch Benutzer abgebrochen"
 "3D-Secure liability shift not available for this transaction","3D-Secure Haftungsumkehr nicht verfügbar für diese Transaktion"
+"3D-Secure liability shift was disabled during authorization request","3D-Secure Haftungsumkehr wurde währen der Authorisierung deaktiviert"
 "The credit card is not enrolled in the 3D-Secure program. Please contact the institution issuing your card for further information.","Die Kreditkarte nimmt nicht am 3D-Secure Verfahren Teil. Bitte kontaktieren Sie den Herausgeber der Karte für weitere Informationen."
+"Order processing halted because 3D-Secure liability shift is not available.","Die Verarbeitung der Bestellung wurde unterbrochen da keine 3D-Secure Haftungsumkehr besteht."
 "Authorization for %s successfull (AUTHCODE %s, ID %s)","Autorisierung der Zahlung von %s erfolgreich (AUTHCODE %s, ID %s)"
 "Error authorizing payment: %s","Fehler bei der Autorisierung der Zahlung: %s"
 "Error: authorization requested for order ""%s"", recieved authorization for order id ""%s""","Fehler: Autorisierungs-Anfrage für Bestellung ""%s"", Antwort für Bestellung ""%s"""
 "Error processing payment: %s","Fehler beim Verarbeiten der Zahlung: %s"
-
+"Account Holder","Kontoinhaber"
+"Direct Debit","Lastschrift"
 

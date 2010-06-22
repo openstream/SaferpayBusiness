@@ -2,7 +2,7 @@
 
 class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Action
 {
-	protected $_scd;
+	protected $_payment;
 
 	public function registerSuccessAction()
 	{
@@ -33,7 +33,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		Mage::log(__METHOD__);
 		try
 		{
-			$this->_getScdPayment()->mpiAuthenticationCancelled();
+			$this->_getPayment()->mpiAuthenticationCancelled();
 			$this->_executePayment();
 			return;
 		}
@@ -63,7 +63,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		try
 		{
 			$this->_verifySignature();
-			$this->_getScdPayment()->importMpiResponseData($this->getRequest()->getParam('DATA', ''));
+			$this->_getPayment()->importMpiResponseData($this->getRequest()->getParam('DATA', ''));
 			$this->_executePayment();
 			return;
 		}
@@ -90,18 +90,22 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 	protected function _processRegisterResponse()
 	{
 		Mage::log(__METHOD__);
+		Mage::log($this->getRequest()->getParams());
 		try
 		{
 			$this->_verifySignature();
-			$method = $this->_getScdPayment();
+			$method = $this->_getPayment();
 			$method->importRegisterResponseData($this->getRequest()->getParam('DATA', ''));
-			$method->setCvc($this->getRequest()->getParam($method->getCvcParamName(), ''));
-			$flags = $method->get3DSecureFlags();
-			if ($flags->getEci() === Saferpay_Business_Model_Scd::ECI_ENROLLED)
+			if ($method->getCode() == 'saferpaybe_cc')
 			{
-				$url = $method->get3DSecureAuthorizeUrl();
-				$this->_redirectUrl($url)->getResponse()->sendHeaders();
-				return;
+				$method->setCvc($this->getRequest()->getParam($method->getCvcParamName(), ''));
+				$flags = $method->get3DSecureFlags();
+				if ($flags->getEci() === Saferpay_Business_Model_Cc::ECI_ENROLLED)
+				{
+					$url = $method->get3DSecureAuthorizeUrl();
+					$this->_redirectUrl($url)->getResponse()->sendHeaders();
+					return;
+				}
 			}
 
 			$this->_executePayment();
@@ -129,7 +133,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 
 	protected function _verifySignature()
 	{
-		$this->_getScdPayment()->verifySignature(
+		$this->_getPayment()->verifySignature(
 			$this->getRequest()->getParam('DATA', ''),
 			$this->getRequest()->getParam('SIGNATURE', '')
 		);
@@ -141,7 +145,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		Mage::log(__METHOD__);
 		try
 		{
-			$this->_getScdPayment()->execute();
+			$this->_getPayment()->execute();
 			Mage::log('execute ok');
 			$this->_redirect('checkout/onepage/success');
 			return;
@@ -173,15 +177,17 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 	/**
 	 * 
 	 *
-	 * @return Saferpay_Business_Model_Scd
+	 * @return Saferpay_Business_Model_Abstract
 	 */
-	protected function _getScdPayment()
+	protected function _getPayment()
 	{
-		if (is_null($this->_scd))
+		if (is_null($this->_payment))
 		{
-			$this->_scd = Mage::getModel('saferpay_be/scd');
+			$methodCode = $this->_getSession()->getSaferpayPaymentMethod();
+			$model = Mage::getStoreConfig('payment/' . $methodCode . '/model');
+			$this->_payment = Mage::getModel($model);
 		}
-		return $this->_scd;
+		return $this->_payment;
 	}
 
 	/**
@@ -190,6 +196,6 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 	 */
 	protected function _getSession()
 	{
-		return $this->_getScdPayment()->getSession();
+		return Mage::getSingleton('checkout/session');
 	}
 }

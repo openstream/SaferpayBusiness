@@ -1,0 +1,34 @@
+<?php
+$_code = $this->getMethodCode();
+$_img  = $this->getPaymentImageSrc($_code);
+?>
+<ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none">
+    <li>
+        <label for="<?php echo $_code ?>_name" class="required"><em>*</em><?php echo $this->__('Account Holder') ?></label>
+        <div class="input-box">
+            <input type="text" title="<?php echo $this->__('Name') ?>" class="input-text required-entry" id="<?php echo $_code ?>_name" name="payment[elv_name]" value="<?php echo $this->htmlEscape($this->getInfoData('elv_name')) ?>" />
+        </div>
+    </li>
+    <li>
+        <label for="<?php echo $_code ?>_account_number" class="required"><em>*</em><?php echo $this->__('Account Number') ?></label>
+        <div class="input-box">
+            <input type="text" id="<?php echo $_code ?>_account_number" name="payment[account_number]" title="<?php echo $this->__('Account Number') ?>" class="input-text required-entry validate-digits no-submit" value="<?php echo $this->htmlEscape($this->getInfoData('account_number')) ?>" />
+        </div>
+    </li>
+    <li>
+        <label for="<?php echo $_code ?>_bank_code" class="required"><em>*</em><?php echo $this->__('Bank Code') ?></label>
+        <div class="input-box">
+            <input type="text" id="<?php echo $_code ?>_bank_code" name="payment[bank_code]" title="<?php echo $this->__('Bank Code') ?>" class="input-text required-entry validate-digits no-submit" value="<?php echo $this->htmlEscape($this->getInfoData('bank_code')) ?>" />
+        </div>
+    </li>
+    <?php echo $this->getChildHtml() ?>
+
+    <?php if ($_img): ?>
+    <li>
+        <div style="padding:10px 15px 15px;">
+            <img src="<?php echo $_img ?>" alt="" /><br />
+        </div>
+    </li>
+    <?php endif; ?>
+</ul>
+

@@ -53,19 +53,26 @@
 	</adminhtml>
 	<default>
 		<payment>
-			<saferpay_scd>
+			<saferpaybe_cc>
 				<active>0</active>
-				<model>saferpay_be/scd</model>
+				<model>saferpay_be/cc</model>
 				<title>Credit Card</title>
 				<allowspecific>0</allowspecific>
 				<generic_error_msg><![CDATA[An error occured while processing the payment, please try again later.]]></generic_error_msg>
 				<allow_non_enrolled>1</allow_non_enrolled>
 				<payment_action>authorize_capture</payment_action>
-			</saferpay_scd>
+			</saferpaybe_cc>
+			<saferpaybe_elv>
+				<active>0</active>
+				<model>saferpay_be/elv</model>
+				<title>Direct Debit</title>
+				<allowspecific>0</allowspecific>
+				<generic_error_msg><![CDATA[An error occured while processing the payment, please try again later.]]></generic_error_msg>
+				<payment_action>authorize_capture</payment_action>
+			</saferpaybe_elv>
 		</payment>
 		<saferpay>
 			<settings>
-				<saferpay_username></saferpay_username>
 				<saferpay_password></saferpay_password>
 				<saferpay_account_id></saferpay_account_id>
 				<!-- Card registration URL and MPI URL generation: -->

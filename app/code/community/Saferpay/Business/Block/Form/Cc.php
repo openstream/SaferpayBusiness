@@ -1,6 +1,6 @@
 <?php
 
-class Saferpay_Business_Block_Form extends Mage_Payment_Block_Form_Cc
+class Saferpay_Business_Block_Form_Cc extends Mage_Payment_Block_Form_Cc
 {
 	/**
 	 * Set the method template
@@ -8,7 +8,7 @@ class Saferpay_Business_Block_Form extends Mage_Payment_Block_Form_Cc
 	protected function _construct()
 	{
 		parent::_construct();
-		$this->setTemplate('saferpay/scd/form.phtml');
+		$this->setTemplate('saferpay/scd/form/cc.phtml');
 	}
 
 	/**

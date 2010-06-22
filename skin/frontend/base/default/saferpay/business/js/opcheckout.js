@@ -10,16 +10,31 @@ Saferpay.Business = Class.create({
 			var validator = new Validation(this.form);
 			if (this.validate() && validator.validate()) {
 				saferpay.ccnum = '';
-				saferpay.cvc = '';
-				if (this.currentMethod && this.currentMethod == 'saferpay_scd') {
-					saferpay.ccnum = $('saferpay_scd_cc_number').value;
-					saferpay.cvc = $('saferpay_scd_cc_cid').value;
+				saferpay.cccvc = '';
+				saferpay.elvacc = '';
+				saferpay.elvbank = '';
+				if (this.currentMethod && this.currentMethod.substr(0, 11) == 'saferpaybe_') {
+					if (this.currentMethod == 'saferpaybe_cc') {
+						saferpay.ccnum = $('saferpaybe_cc_cc_number').value;
+						saferpay.cccvc = $('saferpaybe_cc_cc_cid').value;
+					}
+					else if (this.currentMethod == 'saferpaybe_elv') {
+						saferpay.elvacc = $('saferpaybe_elv_account_number').value;
+						saferpay.elvbank = $('saferpaybe_elv_bank_code').value;
+					}
 					saferpay.disableFields();
 				}
 				origMethod();
-				if (this.currentMethod && this.currentMethod == 'saferpay_scd') {
+				if (this.currentMethod && this.currentMethod.substr(0, 11) == 'saferpaybe_') {
 					saferpay.disableFields(false);
+
+					review.save = review.save.wrap(function (origMethod) {
+						saferpay.disableFields();
+						origMethod();
+						saferpay.disableFields(false);
+					});
 					review.onSave = saferpay.processReviewResponse;
+					review.onComplete = saferpay.updateLoadWaiting;
 				}
 			}
 		});
@@ -30,22 +45,44 @@ Saferpay.Business = Class.create({
 		var elements = form.getElementsByClassName('no-submit');
 		for (var i=0; i<elements.length; i++) elements[i].disabled = mode;
 	},
+	updateLoadWaiting: function(request)
+	{
+		var transport;
+		if (request.transport) transport = request.transport;
+		else transport = false;
+		
+		if (transport && transport.responseText) {
+			try {
+				var response = eval('(' + transport.responseText + ')');
+				if (response.redirect) {
+					/*
+					 * Keep the spinner active
+					 */
+					return true;
+				}
+			}
+			catch (e) {}
+		}
+		/*
+		 * Some kind of error - deactivate the spinner
+		 */
+		checkout.setLoadWaiting(false);
+	},
 	processReviewResponse: function(request)
 	{
 		var transport;
 		
 		if (request.transport) transport = request.transport;
 		else transport = false;
-		
-		if (payment.currentMethod && payment.currentMethod == 'saferpay_scd') {
+		if (payment.currentMethod && payment.currentMethod.substr(0, 11) == 'saferpaybe_') {
 			if (transport && transport.responseText) {
 				try {
 					var response = eval('(' + transport.responseText + ')');
 					if (response.redirect) {
-						checkout.setLoadWaiting(false, true);
-						var url = response.redirect.replace(/___CCNUM___/, saferpay.ccnum).replace(/___CVC___/, saferpay.cvc);
-						location.href = url;
-						return;
+						var url = response.redirect.replace(/___CCNUM___/, saferpay.ccnum).replace(/___CVC___/, saferpay.cccvc);
+						url = url.replace(/__BLZ__/, saferpay.elvbank).replace(/__KTO__/, saferpay.elvacc);
+						window.location.href = url;
+						return true;
 					}
 				}
 				catch (e) {}
