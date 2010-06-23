@@ -16,7 +16,7 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 	 * Availability options
 	 */
 	protected $_isGateway              = true;
-	protected $_canAuthorize           = false;
+	protected $_canAuthorize           = true;
 	protected $_canCapture             = true;
 	protected $_canCapturePartial      = false;
 	protected $_canRefund              = false;
@@ -67,7 +67,8 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 	 */
 	public function getProviderId()
 	{
-		return (string) $this->getConfigData('provider_id');
+		$id = str_replace(' ', '', (string) $this->getConfigData('provider_id'));
+		return $id;
 	}
 
 	/**
@@ -86,7 +87,7 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 		Mage::log($this->getPayInitFields());
 		Mage::log($url);
 		$result = trim(file_get_contents($url));
-		Mage::log(urldecode($result));
+		Mage::log('redirect to url: ' . urldecode($result));
 		return $result;
 	}
 
@@ -149,10 +150,10 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 			'CCCVC'                 => 'yes',
 			'CCNAME'                => 'yes',
 			'ORDERID'               => $orderId,
-			'SUCCESSLINK'           => Mage::getUrl('saferpay/processing/success', array('id' => $orderId)),
-			'BACKLINK'              => Mage::getUrl('saferpay/processing/back', array('id' => $orderId)),
-			'FAILLINK'              => Mage::getUrl('saferpay/processing/fail', array('id' => $orderId)),
-			'NOTIFYURL'             => Mage::getUrl('saferpay/processing/notify', array('id' => $orderId)),
+			'SUCCESSLINK'           => Mage::getUrl('saferpay/process/success', array('id' => $orderId)),
+			'BACKLINK'              => Mage::getUrl('saferpay/process/back', array('id' => $orderId)),
+			'FAILLINK'              => Mage::getUrl('saferpay/process/fail', array('id' => $orderId)),
+			'NOTIFYURL'             => Mage::getUrl('saferpay/process/notify', array('id' => $orderId)),
 			'AUTOCLOSE'             => 0,
 			'PROVIDERSET'           => $this->getProviderId(),
 			'LANGID'                => $this->getLangId(),
@@ -254,6 +255,7 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 		$stateObject->setState(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT);
 		$stateObject->setStatus(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT);
 		$stateObject->setIsNotified(false);
+		$this->getSession()->setSaferpayPaymentMethod($this->getCode());
 	}
 
 	/**

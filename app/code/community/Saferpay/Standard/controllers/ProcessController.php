@@ -2,7 +2,7 @@
 
 class Saferpay_Standard_ProcessController extends Mage_Core_Controller_Front_Action
 {
-	protected $_scd;
+	protected $_payment;
 
 	public function successAction()
 	{
@@ -141,11 +141,12 @@ class Saferpay_Standard_ProcessController extends Mage_Core_Controller_Front_Act
 	 */
 	protected function _getScdPayment()
 	{
-		if (is_null($this->_scd))
+		if (is_null($this->_payment))
 		{
-			$this->_scd = Mage::getModel('saferpay_be/scd');
+			$model = $this->_getSession()->getSaferpayPaymentMethod();
+			$this->_payment = Mage::getModel($model);
 		}
-		return $this->_scd;
+		return $this->_payment;
 	}
 
 	/**
@@ -154,6 +155,6 @@ class Saferpay_Standard_ProcessController extends Mage_Core_Controller_Front_Act
 	 */
 	protected function _getSession()
 	{
-		return $this->_getScdPayment()->getSession();
+		return Mage::getSingleton('checkout/session');
 	}
 }

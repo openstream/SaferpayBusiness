@@ -47,53 +47,54 @@
 	<default>
 		<payment>
 			<!-- GiroPay, eps, iDeal, Postfinance, PayPal, Maestro Online und ELV Online -->
+			<!-- Saferpay Provider Table: http://www.saferpay.com/help/ProviderTable.asp -->
 			<saferpay_giropay translate="title" module="saferpay">
-				<active>1</active>
+				<active>0</active>
 				<title>Saferpay GiroPay</title>
 				<allowspecific>0</allowspecific>
-				<provider_id>631</provider_id>
+				<provider_id></provider_id>
 				<model>saferpay/giropay</model>
 			</saferpay_giropay>
 			<saferpay_eps translate="title" module="saferpay">
-				<active>1</active>
+				<active>0</active>
 				<title>Saferpay EPS</title>
 				<allowspecific>0</allowspecific>
-				<provider_id>555</provider_id>
+				<provider_id></provider_id>
 				<model>saferpay/eps</model>
 			</saferpay_eps>
 			<saferpay_ideal translate="title" module="saferpay">
-				<active>1</active>
+				<active>0</active>
 				<title>Saferpay iDeal</title>
 				<allowspecific>0</allowspecific>
-				<provider_id>555</provider_id>
+				<provider_id></provider_id>
 				<model>saferpay/ideal</model>
 			</saferpay_ideal>
 			<saferpay_paypal translate="title" module="saferpay">
-				<active>1</active>
+				<active>0</active>
 				<title>Saferpay Paypal</title>
 				<allowspecific>0</allowspecific>
-				<provider_id>1064</provider_id>
+				<provider_id></provider_id>
 				<model>saferpay/paypal</model>
 			</saferpay_paypal>
 			<saferpay_maestro translate="title" module="saferpay">
-				<active>1</active>
+				<active>0</active>
 				<title>Saferpay Maestro Online</title>
 				<allowspecific>0</allowspecific>
-				<provider_id>1013</provider_id>
+				<provider_id></provider_id>
 				<model>saferpay/maestro</model>
 			</saferpay_maestro>
 			<saferpay_elv translate="title" module="saferpay">
-				<active>1</active>
+				<active>0</active>
 				<title>Saferpay ELV Online</title>
 				<allowspecific>0</allowspecific>
-				<provider_id>352</provider_id>
+				<provider_id></provider_id>
 				<model>saferpay/elv</model>
 			</saferpay_elv>
 			<saferpay_postfinance translate="title" module="saferpay">
-				<active>1</active>
+				<active>0</active>
 				<title>Saferpay Postfinance</title>
 				<allowspecific>0</allowspecific>
-				<provider_id>384</provider_id>
+				<provider_id></provider_id>
 				<model>saferpay/postfinance</model>
 			</saferpay_postfinance>
 		</payment>
