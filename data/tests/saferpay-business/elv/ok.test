@@ -4,12 +4,12 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="" />
-<title>sptestcard1</title>
+<title>ELV ok</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">sptestcard1</td></tr>
+<tr><td rowspan="1" colspan="3">ELV ok</td></tr>
 </thead><tbody>
 <tr>
 	<td>open</td>
@@ -23,7 +23,7 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//button[@type='button']</td>
+	<td>//button[@type='button' and @onclick=&quot;setLocation('http://local.saferpay/checkout/cart/add/uenc/aHR0cDovL2xvY2FsLnNhZmVycGF5Lz9fX19TSUQ9VQ,,/product/2/')&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -95,6 +95,7 @@
 	<td>type</td>
 	<td>saferpaybe_elv_account_number</td>
 	<td>0012345674</td>
+</tr>
 <tr>
 	<td>type</td>
 	<td>saferpaybe_elv_bank_code</td>
