@@ -25,8 +25,9 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</saferpay_password>
-						<saferpay_account_id translate="label">
+						<saferpay_account_id translate="label,comment">
 							<label>Account-ID</label>
+							<comment>Use 99867-94913159 for testing</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>30</sort_order>
 							<show_in_default>1</show_in_default>

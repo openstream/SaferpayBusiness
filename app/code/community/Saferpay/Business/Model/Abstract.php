@@ -246,7 +246,6 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		 */
 		if (isset($data['ECI']))
 		{
-			Mage::log('Setting ECI to 0');
 			$this->getInfoInstance()->setAdditionalInformation('eci', $data['ECI']);
 		}
 
