@@ -1,4 +1,25 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * Saferpay Business Magento Payment Extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Saferpay Business to
+ * newer versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @copyright Copyright (c) 2010 Openstream Internet Solutions, Switzerland
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
 <config>
 	<sections>
 		<saferpay translate="label" module="saferpay_be">
@@ -17,6 +38,15 @@
 					<show_in_website>0</show_in_website>
 					<show_in_store>0</show_in_store>
 					<fields>
+						<saferpay_account_id translate="label,comment">
+							<label>Account-ID</label>
+							<comment>Use 99867-94913159 for testing</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>10</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</saferpay_account_id>
 						<saferpay_password translate="label">
 							<label>Hosting Password</label>
 							<frontend_type>text</frontend_type>
@@ -25,15 +55,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</saferpay_password>
-						<saferpay_account_id translate="label,comment">
-							<label>Account-ID</label>
-							<comment>Use 99867-94913159 for testing</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>30</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>0</show_in_store>
-						</saferpay_account_id>
 					</fields>
 				</settings>
 			</groups>
