@@ -26,11 +26,11 @@ class Saferpay_Business_Model_System_Config_Source_Payment_Action
 		return array(
 			array(
 				'value' => Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE,
-				'label' => Mage::helper('saferpay_be')->__('Authorize Only')
+				'label' => Mage::helper('saferpay_be')->__('Authorize Only (Reservation)')
 			),
 			array(
 				'value' => Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE_CAPTURE,
-				'label' => Mage::helper('saferpay_be')->__('Authorize and Capture')
+				'label' => Mage::helper('saferpay_be')->__('Authorize and Capture (Booking)')
 			),
 		);
 	}

@@ -88,4 +88,20 @@ class Saferpay_Business_Model_Elv extends Saferpay_Business_Model_Abstract
 		
 		return $this;
 	}
+
+	protected function _appendAuthorizeUrlParams($url, Varien_Object $payment, $amount)
+	{
+		$params = array(
+			'NAME' => $payment->getAdditionalInformation('elv_name'),
+		);
+		$url = $this->_appendQueryParams($url, $params);
+		return parent::_appendAuthorizeUrlParams($url, $payment, $amount);
+	}
+
+	public function assignData($data)
+	{
+		parent::assignData($data);
+		$this->_addPaymentInfoData($data instanceof Varien_Object ? $data->getData() : $data);
+		return $this;
+	}
 }

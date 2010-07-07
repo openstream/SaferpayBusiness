@@ -42,7 +42,6 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		Mage::log(__METHOD__);
 		Mage::log('request init url: ' . $url);
 		$registerCardRefUrl = trim(file_get_contents($url));
-		Mage::log('result: ' . $registerCardRefUrl);
 
 		return $registerCardRefUrl;
 	}
@@ -251,7 +250,6 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		$url = $this->_getAuthorizeUrl($payment, $amount);
 		Mage::log($url);
 		$response = trim(file_get_contents($url));
-		Mage::log($response);
 		list($status, $xml) = $this->_splitResponseData($response);
 		if ($status != 'OK')
 		{

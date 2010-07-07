@@ -28,6 +28,13 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	const DEFAULT_XID = '--';
 	const DEFAULT_CAVV = '--';
 
+	const CARD_TYPE_AMEX       = 19265;
+	const CARD_TYPE_DINERS     = 19268;
+	const CARD_TYPE_MASTERCARD = 19269;
+	const CARD_TYPE_JBC        = 19274;
+	const CARD_TYPE_VISA       = 19286;
+	const CARD_TYPE_TEST       = 99072;
+
 	protected $_code = 'saferpaybe_cc';
 
 	protected $_formBlockType = 'saferpay_be/form_cc';
@@ -225,7 +232,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			if (isset($data['ECI'])) $flags->setEci($data['ECI']);
 			if (isset($data['XID'])) $flags->setXid($data['XID']);
 			if (isset($data['CAVV'])) $flags->setCavv($data['CAVV']);
-			Mage::log('ECI: ' . $flags->getEci());
+			//Mage::log(array('3D-Secure Flags' => $flags->getData()));
 		}
 		catch (Exception $e)
 		{
@@ -294,7 +301,6 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		)->save();
 		$this->_addPaymentInfoData(array(
 				'eci' => self::ECI_NONE,
-				'xid' => self::DEFAULT_XID,
 		));
 		return $this;
 	}
@@ -311,7 +317,9 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 
 	protected function _checkAllowPaymentsWithoutLiabilityShift()
 	{
-		if ($this->getInfoInstance()->getAdditionalInformation('eci') === self::ECI_NONE)
+		if ($this->getInfoInstance()->getAdditionalInformation('eci') === self::ECI_NONE &&
+			in_array($this->getInfoInstance()->getAdditionalInformation('card_type'), $this->_get3dSecureCardTypes())
+		)
 		{
 			if (! $this->getConfigData('allow_non_enrolled'))
 			{
@@ -326,6 +334,16 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Return the card type codes that offer a liability shift via 3D-Secure
+	 *
+	 * @return array
+	 */
+	protected function _get3dSecureCardTypes()
+	{
+		return array(self::CARD_TYPE_MASTERCARD, self::CARD_TYPE_VISA);
 	}
 
 	public function execute()
@@ -381,9 +399,16 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			'ECI' => $payment->getAdditionalInformation('eci'),
 			'MPI_SESSIONID' => $payment->getAdditionalInformation('mpi_session_id'),
 		);
-		if ($payment->getAdditionalInformation('eci') == self::ECI_ENROLLED)
+		if ($payment->getAdditionalInformation('eci') != self::ECI_NONE ||
+			$payment->getAdditionalInformation('xid') != self::DEFAULT_XID
+		)
 		{
 			$params['XID'] = $payment->getAdditionalInformation('xid');
+		}
+		if ($payment->getAdditionalInformation('eci') != self::ECI_NONE ||
+			$payment->getAdditionalInformation('cavv') != self::DEFAULT_CAVV
+		)
+		{
 			$params['CAVV'] = $payment->getAdditionalInformation('cavv');
 		}
 		$url = $this->_appendQueryParams($url, $params);

@@ -8,7 +8,7 @@
 <body>
 <table id="suiteTable" cellpadding="1" cellspacing="1" border="1" class="selenium"><tbody>
 <tr><td><b>Test Suite</b></td></tr>
-<tr><td><a href="cc/visaok.test">Visa 1</a></td></tr>
+<tr><td><a href="cc/visaok.test">Visa</a></td></tr>
 <tr><td><a href="cc/visa3ds.test">Visa 3ds</a></td></tr>
 <tr><td><a href="cc/sptestcard1.test">SP Testcard</a></td></tr>
 <tr><td><a href="cc/sptestcard2.test">SP Testcard Auth-Err</a></td></tr>

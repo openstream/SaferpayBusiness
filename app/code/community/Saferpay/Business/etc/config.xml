@@ -87,7 +87,8 @@
 				<active>0</active>
 				<model>saferpay_be/elv</model>
 				<title>Direct Debit</title>
-				<allowspecific>0</allowspecific>
+				<allowspecific>1</allowspecific>
+				<specificcountry>DE</specificcountry>
 				<generic_error_msg><![CDATA[An error occured while processing the payment, please try again later.]]></generic_error_msg>
 				<payment_action>authorize_capture</payment_action>
 			</saferpaybe_elv>
