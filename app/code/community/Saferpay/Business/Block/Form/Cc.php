@@ -27,7 +27,7 @@ class Saferpay_Business_Block_Form_Cc extends Mage_Payment_Block_Form_Cc
 	protected function _construct()
 	{
 		parent::_construct();
-		$this->setTemplate('saferpay/scd/form/cc.phtml');
+		$this->setTemplate('saferpay/business/form/cc.phtml');
 	}
 
 	/**

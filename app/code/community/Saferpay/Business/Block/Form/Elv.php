@@ -27,7 +27,7 @@ class Saferpay_Business_Block_Form_Elv extends Mage_Payment_Block_Form
 	protected function _construct()
 	{
 		parent::_construct();
-		$this->setTemplate('saferpay/scd/form/elv.phtml');
+		$this->setTemplate('saferpay/business/form/elv.phtml');
 	}
 
 	/**
