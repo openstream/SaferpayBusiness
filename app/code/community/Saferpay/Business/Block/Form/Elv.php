@@ -39,12 +39,13 @@ class Saferpay_Business_Block_Form_Elv extends Mage_Payment_Block_Form
 	public function getPaymentImageSrc($methodCode)
 	{
 		$imageFilename = Mage::getDesign()
-			->getFilename('images' . DS . 'saferpay' . DS . $methodCode, array('_type' => 'skin'));
+			->getFilename('saferpay' . DS . 'business' . DS . 'images' . DS . $methodCode, array('_type' => 'skin'));
+		Mage::log($imageFilename);
 
 		if (file_exists($imageFilename . '.png')) {
-			return $this->getSkinUrl('images/saferpay/' . $methodCode . '.png');
+			return $this->getSkinUrl('saferpay/business/images/' . $methodCode . '.png');
 		} else if (file_exists($imageFilename . '.gif')) {
-			return $this->getSkinUrl('images/saferpay/' . $methodCode . '.gif');
+			return $this->getSkinUrl('saferpay/business/images/' . $methodCode . '.gif');
 		}
 
 		return false;
