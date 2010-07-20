@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Saferpay Business Magento Payment Extension
  *
@@ -18,9 +19,9 @@
  * @copyright Copyright (c) 2010 Openstream Internet Solutions (http://www.openstream.ch)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-
 class Saferpay_Business_Block_Form_Cc extends Mage_Payment_Block_Form_Cc
 {
+
 	/**
 	 * Set the method template
 	 */
@@ -30,23 +31,24 @@ class Saferpay_Business_Block_Form_Cc extends Mage_Payment_Block_Form_Cc
 		$this->setTemplate('saferpay/business/form/cc.phtml');
 	}
 
-	/**
-	 * Return payment logo image src
-	 *
-	 * @param string $methodCode Payment Code
-	 * @return string|bool
-	 */
-	public function getPaymentImageSrc($methodCode)
+	public function getPaymentImageSrcs($methodCode)
 	{
-		$imageFilename = Mage::getDesign()
-			->getFilename('images' . DS . 'saferpay' . DS . $methodCode, array('_type' => 'skin'));
+		$images = array();
+		foreach ($this->getCcAvailableTypes() as $typeCode => $typeName)
+		{
+			$imageFilename = Mage::getDesign()
+							->getFilename('saferpay' . DS . 'business' . DS . 'images' . DS . $methodCode . DS . $typeCode, array('_type' => 'skin'));
 
-		if (file_exists($imageFilename . '.png')) {
-			return $this->getSkinUrl('images/saferpay/' . $methodCode . '.png');
-		} else if (file_exists($imageFilename . '.gif')) {
-			return $this->getSkinUrl('images/saferpay/' . $methodCode . '.gif');
+			if (file_exists($imageFilename . '.png'))
+			{
+				$images[] = $this->getSkinUrl('saferpay/business/images/' . $methodCode . '/' . $typeCode . '.png');
+			}
+			elseif (file_exists($imageFilename . '.gif'))
+			{
+				$images[] = $this->getSkinUrl('saferpay/business/images/' . $methodCode . '/' . $typeCode . '.gif');
+			}
 		}
-
-		return false;
+		return $images;
 	}
+
 }

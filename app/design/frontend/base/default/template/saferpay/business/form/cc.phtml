@@ -21,7 +21,7 @@
 ?>
 <?php
 $_code = $this->getMethodCode();
-$_img  = $this->getPaymentImageSrc($_code);
+$_imgs  = $this->getPaymentImageSrcs($_code);
 ?>
 <ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none">
     <li>
@@ -82,10 +82,12 @@ $_img  = $this->getPaymentImageSrc($_code);
     </li>
     <?php endif; ?>
 
-    <?php if ($_img): ?>
+    <?php if ($_imgs): ?>
     <li>
         <div style="padding:10px 15px 15px;">
-            <img src="<?php echo $_img ?>" alt="" /><br />
+	    <?php foreach ($_imgs as $_img): ?>
+            <img src="<?php echo $_img ?>" class="cc-logo" alt="" />
+	    <?php endforeach; ?><br/>
         </div>
     </li>
     <?php endif; ?>
