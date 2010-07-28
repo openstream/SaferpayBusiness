@@ -57,7 +57,7 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
             $this->_order = $this->getInfoInstance()->getOrder();
 			if (! $this->_order)
 			{
-				$orderId = $this->_getSession()->getQuote()->getReservedOrderId();
+				$orderId = $this->getSession()->getQuote()->getReservedOrderId();
 				$order = Mage::getModel('sales/order');
 				$order->loadByIncrementId($orderId);
 				if ($order->getId())
@@ -70,13 +70,34 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
     }
 
 	/**
-	 * Get the checkout session model
 	 *
 	 * @return Mage_Checkout_Model_Session
 	 */
-	protected function _getSession()
+	public function getSession()
 	{
 		return Mage::getSingleton('checkout/session');
+	}
+
+	protected function _parseResponseXml($xml)
+	{
+		$data = array();
+		if ($xml)
+		{
+			$xml = simplexml_load_string($xml);
+			$data = (array) $xml->attributes();
+			$data = $data['@attributes'];
+		}
+		return $data;
+	}
+
+	protected function _appendQueryParams($url, array $params)
+	{
+		foreach ($params as $k => $v)
+		{
+			$url .= strpos($url, '?') === false ? '?' : '&';
+			$url .= sprintf("%s=%s", $k, urlencode($v));
+		}
+		return $url;
 	}
 
 	/**
@@ -90,6 +111,68 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 		return $id;
 	}
 
+    /**
+     *
+     * @param string $status Either "failed" or "cancelled"
+     */
+    public function abortPayment($status)
+    {
+        /*
+         * Add status to order history
+         */
+        $this->getOrder()->addStatusHistoryComment(
+            Mage::helper('saferpay')->__('Payment aborted with status "%s"', Mage::helper('saferpay')->__($status))
+        )->save();
+
+        /*
+         * Update status
+         */
+        $this->cancel($this->getInfoInstance());
+
+        return $this;
+    }
+
+
+    /**
+     * Execute the payment
+     *
+     * @return Saferpay_Standard_Model_Abstract
+     */
+	public function execute()
+	{
+		Mage::log(__METHOD__);
+		$this->getInfoInstance()->setStatus(self::STATUS_APPROVED);
+		
+		if ($this->getConfigPaymentAction() == self::ACTION_AUTHORIZE_CAPTURE)
+		{
+			$this->_createInvoice();
+
+			$this->getOrder()
+				->sendNewOrderEmail()
+				->setEmailSent(true)
+				->save();
+		}
+
+		return $this;
+	}
+	
+	/**
+	 * Builds invoice for order
+	 *
+	 * @return Saferpay_Business_Model_Scd
+	 */
+	protected function _createInvoice()
+	{
+		Mage::log(__METHOD__);
+		if (! $this->getOrder()->canInvoice()) {
+			return;
+		}
+		$invoice = $this->getOrder()->prepareInvoice();
+		$invoice->register()->capture();
+		$this->getOrder()->addRelatedObject($invoice);
+		return $this;
+	}
+
 	/**
 	 * Return url for redirection after order placed
 	 *
@@ -98,11 +181,7 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 	public function getOrderPlaceRedirectUrl()
 	{
 		$url = $this->getPayInitUrl();
-		foreach ($this->getPayInitFields() as $key => $value)
-		{
-			$url .= strpos($url, '?') !== false ? '&' : '?';
-			$url .= $key . '=' . urlencode($value);
-		}
+		$url = $this->_appendQueryParams($url, $this->getPayInitFields());
 		Mage::log($this->getPayInitFields());
 		Mage::log($url);
 		$result = trim(file_get_contents($url));
@@ -219,7 +298,9 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 			}
 		}
 		catch (Exception $e)
-		{}
+		{
+			Mage::logException($e);
+		}
 
 		$this->setUseDefaultLangId(true);
 		return Mage::helper('saferpay')->getSetting('default_lang_id');

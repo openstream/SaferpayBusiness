@@ -29,31 +29,36 @@ class Saferpay_Standard_ProcessController extends Mage_Core_Controller_Front_Act
 		$this->_processResponse();
 	}
 
-	public function failAction()
-	{
-		Mage::log(__METHOD__);
-		$this->_processResponse();
-	}
-
 	public function notifyAction()
 	{
 		Mage::log(__METHOD__);
-		$this->_processResponse();
+        /*
+         * Only log result of notification?
+         */
 	}
 
 	public function backAction()
 	{
 		Mage::log(__METHOD__);
+        $this->_abortPayment('canceled');
+	}
+
+	public function failAction()
+	{
+		Mage::log(__METHOD__);
+        $this->_abortPayment('failed');
+	}
+
+	public function _abortPayment($status)
+	{
+		Mage::log(__METHOD__);
 		try
 		{
-			$this->_getScdPayment()->mpiAuthenticationCancelled();
-			$this->_executePayment();
-			return;
+			$this->_getPayment()->abortPayment($status);
 		}
 		catch (Mage_Core_Exception $e)
 		{
 			Mage::logException($e);
-			Mage::helper('checkout')->sendPaymentFailedEmail($this->_getSession()->getQuote(), $e->getMessage());
 			$this->_getSession()->addError($e->getMessage());
 		}
 		catch (Exception $e)
@@ -61,10 +66,10 @@ class Saferpay_Standard_ProcessController extends Mage_Core_Controller_Front_Act
 			Mage::logException($e);
 			Mage::helper('checkout')->sendPaymentFailedEmail(
 				$this->_getSession()->getQuote(),
-				Mage::helper('saferpay_be')->__("An error occures while processing the payment: %s", print_r($e, 1)) . "\n"
+				Mage::helper('saferpay_be')->__("An error occures while processing the payment failure: %s", print_r($e, 1)) . "\n"
 			);
 			$this->_getSession()->addError(
-				Mage::helper('saferpay_be')->__('An error occured while processing the payment, please contact the store owner for assistance.')
+				Mage::helper('saferpay_be')->__('An error occured while processing the payment failure, please contact the store owner for assistance.')
 			);
 		}
 		$this->_redirect('checkout/cart');
@@ -76,16 +81,13 @@ class Saferpay_Standard_ProcessController extends Mage_Core_Controller_Front_Act
 		try
 		{
 			$this->_verifySignature();
-			$method = $this->_getScdPayment();
+			$method = $this->_getPayment();
 			$method->importRegisterResponseData($this->getRequest()->getParam('DATA', ''));
-			$method->setCvc($this->getRequest()->getParam($method->getCvcParamName(), ''));
-			$flags = $method->get3DSecureFlags();
-			if ($flags->getEci() === Saferpay_Business_Model_Scd::ECI_ENROLLED)
-			{
-				$url = $method->get3DSecureAuthorizeUrl();
-				$this->_redirectUrl($url)->getResponse()->sendHeaders();
-				return;
-			}
+
+
+            /*
+             * Switch case according to response
+             */
 
 			$this->_executePayment();
 			return;
@@ -101,10 +103,10 @@ class Saferpay_Standard_ProcessController extends Mage_Core_Controller_Front_Act
 			Mage::logException($e);
 			Mage::helper('checkout')->sendPaymentFailedEmail(
 				$this->_getSession()->getQuote(),
-				Mage::helper('saferpay_be')->__("An error occures while processing the payment: %s", print_r($e, 1))
+				Mage::helper('saferpay')->__("An error occures while processing the payment: %s", print_r($e, 1))
 			);
 			$this->_getSession()->addError(
-				Mage::helper('saferpay_be')->__('An error occured while processing the payment, please contact the store owner for assistance.')
+				Mage::helper('saferpay')->__('An error occured while processing the payment, please contact the store owner for assistance.')
 			);
 		}
 		$this->_redirect('checkout/cart');
@@ -112,7 +114,7 @@ class Saferpay_Standard_ProcessController extends Mage_Core_Controller_Front_Act
 
 	protected function _verifySignature()
 	{
-		$this->_getScdPayment()->verifySignature(
+		$this->_getPayment()->verifySignature(
 			$this->getRequest()->getParam('DATA', ''),
 			$this->getRequest()->getParam('SIGNATURE', '')
 		);
@@ -124,7 +126,7 @@ class Saferpay_Standard_ProcessController extends Mage_Core_Controller_Front_Act
 		Mage::log(__METHOD__);
 		try
 		{
-			$this->_getScdPayment()->execute();
+			$this->_getPayment()->execute();
 			Mage::log('execute ok');
 			$this->_redirect('checkout/onepage/success');
 			return;
@@ -154,15 +156,16 @@ class Saferpay_Standard_ProcessController extends Mage_Core_Controller_Front_Act
 	}
 
 	/**
-	 * 
 	 *
-	 * @return Saferpay_Business_Model_Scd
+	 *
+	 * @return Saferpay_Business_Model_Abstract
 	 */
-	protected function _getScdPayment()
+	protected function _getPayment()
 	{
 		if (is_null($this->_payment))
 		{
-			$model = $this->_getSession()->getSaferpayPaymentMethod();
+			$methodCode = $this->_getSession()->getSaferpayPaymentMethod();
+			$model = Mage::getStoreConfig('payment/' . $methodCode . '/model');
 			$this->_payment = Mage::getModel($model);
 		}
 		return $this->_payment;
