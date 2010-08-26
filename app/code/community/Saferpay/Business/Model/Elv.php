@@ -46,12 +46,7 @@ class Saferpay_Business_Model_Elv extends Saferpay_Business_Model_Abstract
 	 */
 	public function getOrderPlaceRedirectUrl()
 	{
-		$params = array(
-			'sfpCardBLZ' => '__BLZ__',
-			'sfpCardKonto' => '__KTO__'
-		);
 		$url = $this->_getRegisterCardRefUrl();
-		$url = $this->_appendQueryParams($url, $params);
 		Mage::log($url);
 		return $url;
 	}

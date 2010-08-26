@@ -30,24 +30,34 @@ class Saferpay_Business_Block_Form_Elv extends Mage_Payment_Block_Form
 		$this->setTemplate('saferpay/business/form/elv.phtml');
 	}
 
-	/**
-	 * Return payment logo image src
-	 *
-	 * @param string $methodCode Payment Code
-	 * @return string|bool
-	 */
-	public function getPaymentImageSrc($methodCode)
+	public function getPaymentImageSrcs($methodCode)
 	{
-		$imageFilename = Mage::getDesign()
-			->getFilename('saferpay' . DS . 'business' . DS . 'images' . DS . $methodCode, array('_type' => 'skin'));
-		Mage::log($imageFilename);
+		$images = array();
+		foreach ($this->getCcAvailableTypes() as $typeCode => $typeName)
+		{
+			$imageFilename = Mage::getDesign()
+							->getFilename('saferpay' . DS . 'business' . DS . 'images' . DS . $methodCode . DS . $typeCode, array('_type' => 'skin'));
 
-		if (file_exists($imageFilename . '.png')) {
-			return $this->getSkinUrl('saferpay/business/images/' . $methodCode . '.png');
-		} else if (file_exists($imageFilename . '.gif')) {
-			return $this->getSkinUrl('saferpay/business/images/' . $methodCode . '.gif');
+			foreach (array('.png', '.gif', '.jpg') as $filetype)
+			{
+				if (file_exists($imageFilename . $filetype))
+				{
+					$images[] = $this->getSkinUrl('saferpay/business/images/' . $methodCode . '/' . $typeCode . $filetype);
+					break;
+				}
+			}
+			/*
+
+			foreach (array('-3ds.png', '-3ds.gif', '-3ds.jpg') as $filetype)
+			{
+				if (file_exists($imageFilename . $filetype))
+				{
+					$images[] = $this->getSkinUrl('saferpay/business/images/' . $methodCode . '/' . $typeCode . $filetype);
+					break;
+				}
+			}
+			 */
 		}
-
-		return false;
+		return $images;
 	}
 }

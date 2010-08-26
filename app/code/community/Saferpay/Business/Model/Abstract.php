@@ -263,6 +263,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 			$this->_throwException($xml);
 		}
 		$data = $this->_parseResponseXml($xml);
+		Mage::log(array('Authorization Response' => $data, 'Status' => $status));
 		$this->_validateAuthorizationResponse($status, $data);
 
 		/*
@@ -273,9 +274,14 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 			$this->getInfoInstance()->setAdditionalInformation('eci', $data['ECI']);
 		}
 
+		/*
+		 * AUTHCODE isn't set any more with the new terminal for ELV
+		 */
+		$authcode = isset($data['AUTHCODE']) ? $data['AUTHCODE'] : $data['ORDERID'];
+
 		$this->_addPaymentInfoData(array(
 				'transaction_id' => $data['ID'],
-				'auth_code' => $data['AUTHCODE'],
+				'auth_code' => $authcode,
 			), $payment);
 
 		$payment->setStatus(self::STATUS_APPROVED)
@@ -283,7 +289,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 
 		$amount = Mage::helper('core')->formatPrice(round($amount, 2), false);
 		$this->getOrder()->addStatusHistoryComment(
-				Mage::helper('saferpay_be')->__('Authorization for %s successfull (AUTHCODE %s, ID %s)', $amount, $data['AUTHCODE'], $data['ID'])
+				Mage::helper('saferpay_be')->__('Authorization for %s successfull (AUTHCODE %s, ID %s)', $amount, $authcode, $data['ID'])
 			)->save(); // save history model
 
 		$this->getOrder()->save();

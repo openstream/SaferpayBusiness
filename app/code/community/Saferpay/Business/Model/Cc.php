@@ -70,14 +70,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	 */
 	public function getOrderPlaceRedirectUrl()
 	{
-		$params = array(
-			'sfpCardNumber' => '___CCNUM___',
-			$this->getCvcParamName() => '___CVC___',
-			'sfpCardExpiryMonth' => $this->getInfoInstance()->getCcExpMonth(),
-			'sfpCardExpiryYear' => $this->getInfoInstance()->getCcExpYear(),
-		);
 		$url = $this->_getRegisterCardRefUrl();
-		$url = $this->_appendQueryParams($url, $params);
 		return $url;
 	}
 
@@ -165,7 +158,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
 			'CARDREFID' => $this->getInfoInstance()->getAdditionalInformation('card_ref_id'),
 			'EXP' => $expiry,
-			'AMOUNT' => round($this->getOrder()->getGrandTotal(), 2),
+			'AMOUNT' => intval(round($this->getOrder()->getGrandTotal(), 2) * 100),
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
 		);
 		$url = Mage::getStoreConfig('saferpay/settings/verify_base_url');
@@ -224,6 +217,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		{
 			$url = $this->_getVerify3DSecureUrl();
 			$response = trim(file_get_contents($url));
+			Mage::log('Validate 3D Enrolement response: ' . $response);
 			list($status, $xml) = $this->_splitResponseData($response);
 			$data = $this->_parseResponseXml($xml);
 			$this->_validate3DSecureInitResponse($status, $data);

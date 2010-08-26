@@ -4,12 +4,12 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="" />
-<title>sptestcard3ds</title>
+<title>SP Testcard 3ds</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">sptestcard3ds</td></tr>
+<tr><td rowspan="1" colspan="3">SP Testcard 3ds</td></tr>
 </thead><tbody>
 <tr>
 	<td>open</td>
@@ -94,7 +94,7 @@
 <tr>
 	<td>select</td>
 	<td>saferpaybe_cc_cc_type</td>
-	<td>label=Other</td>
+	<td>label=Saferpay Test Card</td>
 </tr>
 <tr>
 	<td>type</td>
@@ -158,7 +158,7 @@
 	<td>Vielen Dank für Ihren Einkauf!</td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
+	<td>assertTextPresent</td>
 	<td>Ihre Bestellung ist eingegangen</td>
 	<td></td>
 </tr>

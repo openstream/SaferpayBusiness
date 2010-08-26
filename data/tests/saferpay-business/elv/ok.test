@@ -23,7 +23,7 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//button[@type='button' and @onclick=&quot;setLocation('http://local.saferpay/checkout/cart/add/uenc/aHR0cDovL2xvY2FsLnNhZmVycGF5Lz9fX19TSUQ9VQ,,/product/2/')&quot;]</td>
+	<td>//button[@type='button' and @onclick=&quot;setLocation('http://saferpay.dev/checkout/cart/add/uenc/aHR0cDovL3NhZmVycGF5LmRldi8_X19fU0lEPVU,/product/2/')&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -122,7 +122,7 @@
 	<td>Vielen Dank für Ihren Einkauf!</td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
+	<td>assertTextPresent</td>
 	<td>Ihre Bestellung ist eingegangen</td>
 	<td></td>
 </tr>

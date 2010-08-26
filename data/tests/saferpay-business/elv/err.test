@@ -117,8 +117,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
-	<td>authorization failed (65):</td>
+	<td>assertForTextPresent</td>
+	<td>authorization denied</td>
 	<td></td>
 </tr>
 

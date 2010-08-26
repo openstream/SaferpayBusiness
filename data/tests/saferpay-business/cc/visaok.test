@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="selenium.base" href="http://local.saferpay/" />
+<link rel="selenium.base" href="http://saferpay.dev/" />
 <title>Visa</title>
 </head>
 <body>
@@ -137,7 +137,7 @@
 	<td>Vielen Dank für Ihren Einkauf!</td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
+	<td>assertTextPresent</td>
 	<td>Ihre Bestellung ist eingegangen</td>
 	<td></td>
 </tr>

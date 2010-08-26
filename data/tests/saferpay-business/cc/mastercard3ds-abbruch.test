@@ -4,12 +4,12 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="" />
-<title>mastercard3ds-abbruch</title>
+<title>Mastercard 3ds Abbruch</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">mastercard3ds-abbruch</td></tr>
+<tr><td rowspan="1" colspan="3">Mastercard 3ds Abbruch</td></tr>
 </thead><tbody>
 <!--Dummy Test - currently impossible to trigger 3D Secure error-->
 <tr>
@@ -159,7 +159,7 @@
 	<td>Vielen Dank für Ihren Einkauf!</td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
+	<td>assertTextPresent</td>
 	<td>Ihre Bestellung ist eingegangen</td>
 	<td></td>
 </tr>

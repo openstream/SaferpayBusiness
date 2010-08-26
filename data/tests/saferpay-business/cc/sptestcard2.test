@@ -4,12 +4,12 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="" />
-<title>sptestcard2</title>
+<title>SP Testcard Auth-Err</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">sptestcard2</td></tr>
+<tr><td rowspan="1" colspan="3">SP Testcard Auth-Err</td></tr>
 </thead><tbody>
 <tr>
 	<td>open</td>
@@ -104,7 +104,7 @@
 <tr>
 	<td>select</td>
 	<td>saferpaybe_cc_cc_type</td>
-	<td>label=Other</td>
+	<td>label=Saferpay Test Card</td>
 </tr>
 <tr>
 	<td>type</td>
@@ -147,8 +147,8 @@
 	<td>Warenkorb</td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>authorization failed (65):</td>
+	<td>assertTextPresent</td>
+	<td>authorization denied</td>
 	<td></td>
 </tr>
 

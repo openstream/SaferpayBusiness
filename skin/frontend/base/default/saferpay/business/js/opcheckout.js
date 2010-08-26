@@ -30,12 +30,16 @@ Saferpay.Business = Class.create({
 			if (this.validate() && validator.validate()) {
 				saferpay.ccnum = '';
 				saferpay.cccvc = '';
+				saferpay.ccexpmonth = '';
+				saferpay.ccexpyear = '';
 				saferpay.elvacc = '';
 				saferpay.elvbank = '';
 				if (this.currentMethod && this.currentMethod.substr(0, 11) == 'saferpaybe_') {
 					if (this.currentMethod == 'saferpaybe_cc') {
 						saferpay.ccnum = $('saferpaybe_cc_cc_number').value;
 						saferpay.cccvc = $('saferpaybe_cc_cc_cid').value;
+						saferpay.ccexpmonth = $('saferpaybe_cc_expiration').value;
+						saferpay.ccexpyear = $('saferpaybe_cc_expiration_yr').value;
 					}
 					else if (this.currentMethod == 'saferpaybe_elv') {
 						saferpay.elvacc = $('saferpaybe_elv_account_number').value;
@@ -98,9 +102,21 @@ Saferpay.Business = Class.create({
 				try {
 					var response = eval('(' + transport.responseText + ')');
 					if (response.redirect) {
-						var url = response.redirect.replace(/___CCNUM___/, saferpay.ccnum).replace(/___CVC___/, saferpay.cccvc);
-						url = url.replace(/__BLZ__/, saferpay.elvbank).replace(/__KTO__/, saferpay.elvacc);
-						window.location.href = url;
+
+						var form = new Element('form', {'action': response.redirect, 'method': 'post', 'id': 'saferpay_be_transport'});
+						$$('body')[0].insert(form);
+						if (String(saferpay.ccnum).length > 0) {
+							form.insert(new Element('input', {'type': 'hidden', 'name': 'sfpCardNumber', 'value':  saferpay.ccnum}));
+							form.insert(new Element('input', {'type': 'hidden', 'name': 'sfpCardCvc', 'value':  saferpay.cccvc}));
+							form.insert(new Element('input', {'type': 'hidden', 'name': 'sfpCardExpiryMonth', 'value':  saferpay.ccexpmonth}));
+							form.insert(new Element('input', {'type': 'hidden', 'name': 'sfpCardExpiryYear', 'value':  saferpay.ccexpyear}));
+						}
+						else if (String(saferpay.elvbank).length > 0) {
+							form.insert(new Element('input', {'type': 'hidden', 'name': 'sfpCardBLZ', 'value':  saferpay.elvbank}));
+							form.insert(new Element('input', {'type': 'hidden', 'name': 'sfpCardKonto',  'value':  saferpay.elvacc}));
+						}
+						form.submit();
+						
 						return true;
 					}
 				}
@@ -109,6 +125,17 @@ Saferpay.Business = Class.create({
 		}
 		review.nextStep(transport);
 	}
+});
+
+/*
+ * Extend the cc validation scripts
+ */
+Validation.creditCartTypes = Validation.creditCartTypes.merge({
+	'VP': [false, new RegExp('^([0-9]{3}|[0-9]{4})?$'), false],
+	'BC': [false, new RegExp('^([0-9]{3}|[0-9]{4})?$'), false],
+	'MO': [false, new RegExp('^([0-9]{3}|[0-9]{4})?$'), false],
+	'UP': [false, new RegExp('^([0-9]{3}|[0-9]{4})?$'), false],
+	'TC': [false, new RegExp('^([0-9]{3}|[0-9]{4})?$'), false]
 });
 
 Event.observe(window, 'load', function() {
