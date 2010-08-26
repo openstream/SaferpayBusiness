@@ -42,6 +42,62 @@
 				<class>Saferpay_Business_Helper</class>
 			</saferpay_be>
 		</helpers>
+		<saferpay_be>
+			<cc>
+				<types>
+					<AE>
+						<code>AE</code>
+						<name>American Express</name>
+						<order>0</order>
+					</AE>
+					<VI>
+						<code>VI</code>
+						<name>Visa</name>
+						<order>10</order>
+					</VI>
+					<MC>
+						<code>MC</code>
+						<name>Master Card</name>
+						<order>20</order>
+					</MC>
+					<DI>
+						<code>DI</code>
+						<name>Discover</name>
+						<order>30</order>
+					</DI>
+					<SS>
+						<code>SS</code>
+						<name>Maestro</name>
+						<order>40</order>
+					</SS>
+					<VP>
+						<code>VP</code>
+						<name>V Pay</name>
+						<order>50</order>
+					</VP>
+					<BC>
+						<code>BC</code>
+						<name>Bonus Card</name>
+						<order>60</order>
+					</BC>
+					<MO>
+						<code>MO</code>
+						<name>myOne</name>
+						<order>70</order>
+					</MO>
+					<UP>
+						<code>UP</code>
+						<name>UnionPay</name>
+						<order>80</order>
+					</UP>
+					<TC>
+						<code>TC</code>
+						<name>Saferpay Test Card</name>
+						<order>1000</order>
+					</TC>
+				</types>
+			</cc>
+		</saferpay_be>
 	</global>
 	<frontend>
 		<routers>
@@ -78,6 +134,7 @@
 				<active>0</active>
 				<model>saferpay_be/cc</model>
 				<title>Credit Card</title>
+				<cctypes>TC</cctypes>
 				<allowspecific>0</allowspecific>
 				<generic_error_msg><![CDATA[An error occured while processing the payment, please try again later.]]></generic_error_msg>
 				<allow_non_enrolled>1</allow_non_enrolled>

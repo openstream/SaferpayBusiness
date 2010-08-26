@@ -21,7 +21,6 @@
  */
 class Saferpay_Business_Block_Form_Cc extends Mage_Payment_Block_Form_Cc
 {
-
 	/**
 	 * Set the method template
 	 */
@@ -39,16 +38,57 @@ class Saferpay_Business_Block_Form_Cc extends Mage_Payment_Block_Form_Cc
 			$imageFilename = Mage::getDesign()
 							->getFilename('saferpay' . DS . 'business' . DS . 'images' . DS . $methodCode . DS . $typeCode, array('_type' => 'skin'));
 
-			if (file_exists($imageFilename . '.png'))
+			foreach (array('.png', '.gif', '.jpg') as $filetype)
 			{
-				$images[] = $this->getSkinUrl('saferpay/business/images/' . $methodCode . '/' . $typeCode . '.png');
+				if (file_exists($imageFilename . $filetype))
+				{
+					$images[] = $this->getSkinUrl('saferpay/business/images/' . $methodCode . '/' . $typeCode . $filetype);
+					break;
+				}
 			}
-			elseif (file_exists($imageFilename . '.gif'))
+			/*
+
+			foreach (array('-3ds.png', '-3ds.gif', '-3ds.jpg') as $filetype)
 			{
-				$images[] = $this->getSkinUrl('saferpay/business/images/' . $methodCode . '/' . $typeCode . '.gif');
+				if (file_exists($imageFilename . $filetype))
+				{
+					$images[] = $this->getSkinUrl('saferpay/business/images/' . $methodCode . '/' . $typeCode . $filetype);
+					break;
+				}
 			}
+			 */
 		}
 		return $images;
 	}
 
+	/**
+	 * Retrieve availables credit card types
+	 *
+	 * @return array
+	 */
+	public function getCcAvailableTypes()
+	{
+		$types = $this->getData('cc_available_types');
+		if (is_null($types))
+		{
+			$types = Mage::getModel('saferpay_be/system_config_source_payment_cctype')->getCcTypes();
+			if ($method = $this->getMethod())
+			{
+				$availableTypes = $method->getConfigData('cctypes');
+				if ($availableTypes)
+				{
+					$availableTypes = explode(',', $availableTypes);
+					foreach ($types as $code=>$name)
+					{
+						if (!in_array($code, $availableTypes))
+						{
+							unset($types[$code]);
+						}
+					}
+				}
+			}
+			$this->setCcAvailableTypes($types);
+		}
+		return $types;
+	}
 }
