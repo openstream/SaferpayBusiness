@@ -148,16 +148,22 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 
 	public function validateRegisterResponseData($data)
 	{
-		if (! isset($data['RESULT']))
+		$result = isset($data['SCDRESULT']) ? $data['SCDRESULT'] : (isset($data['RESULT']) ? $data['RESULT'] : null);
+
+		if (is_null($result))
 		{
 			/*
 			 * Generic error, no error message returned
 			 */
 			$this->_throwException();
 		}
-		elseif ($data['RESULT'] != 0)
+		elseif ($result != 0)
 		{
-			if (isset($data['DESCRIPTION']))
+			if (isset($data['SCDDESCRIPTION']))
+			{
+				$msg = $data['SCDDESCRIPTION'];
+			}
+			elseif (isset($data['DESCRIPTION']))
 			{
 				$msg = $data['DESCRIPTION'];
 			}
@@ -191,6 +197,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		$url = $this->_appendQueryParams($url, $params);
 		$response = trim(file_get_contents($url));
 		list($status, $params) = $this->_splitResponseData($response);
+		Mage::log(array('validation result' => $response));
 		if ($status != 'OK')
 		{
 			$this->_throwException('Signature invalid, possible manipulation detected! Validation Result: "%s"', $response);
