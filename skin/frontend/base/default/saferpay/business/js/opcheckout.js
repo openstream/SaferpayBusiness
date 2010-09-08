@@ -124,6 +124,27 @@ Saferpay.Business = Class.create({
 			}
 		}
 		review.nextStep(transport);
+	},
+	init3dsNotfications: function() {
+		if ($('saferpaybe_cc_cc_type')) {
+			Event.observe($('saferpaybe_cc_cc_type'), 'click', saferpay.update3dsNotification.bind(this));
+			saferpay.update3dsNotification();
+		}
+	},
+	update3dsNotification: function() {
+		var ccOptions = $$('#saferpaybe_cc_cc_type option');
+		if (ccOptions) {
+			ccOptions.each(function(option) {
+				var elementId = '3ds-notification-' + option.value;
+				if ($(elementId)) {
+					if (option.value == $F('saferpaybe_cc_cc_type')) {
+						$(elementId).show();
+					} else {
+						$(elementId).hide();
+					}
+				}
+			});
+		}
 	}
 });
 
@@ -140,4 +161,5 @@ Validation.creditCartTypes = Validation.creditCartTypes.merge({
 
 Event.observe(window, 'load', function() {
 	saferpay = new Saferpay.Business();
+	saferpay.init3dsNotfications();
 });

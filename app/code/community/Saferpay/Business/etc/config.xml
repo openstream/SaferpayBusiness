@@ -116,6 +116,15 @@
 				</saferpay_be>
 			</updates>
 		</layout>
+        <translate>
+            <modules>
+                <Saferpay_Business>
+                    <files>
+                        <default>Saferpay_Business.csv</default>
+                    </files>
+                </Saferpay_Business>
+            </modules>
+        </translate>
 	</frontend>
 	<adminhtml>
         <translate>

@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
 /**
  * Saferpay Business Magento Payment Extension
  *
@@ -19,12 +17,7 @@
  * @copyright Copyright (c) 2010 Openstream Internet Solutions, Switzerland
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
--->
-<layout>
-	<checkout_onepage_index>
-		<reference name="head">
-			<action method="addItem"><type>skin_js</type><name>saferpay/business/js/opcheckout.js</name><params/><if/></action>
-			<action method="addItem"><type>skin_css</type><name>saferpay/business/css/saferpay.css</name><params/><if/></action>
-		</reference>
-	</checkout_onepage_index>
-</layout>
+
+.sp3ds-notification .sp3ds-logo {
+	 float: right;
+}
