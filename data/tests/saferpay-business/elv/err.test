@@ -117,7 +117,12 @@
 	<td></td>
 </tr>
 <tr>
-	<td>assertForTextPresent</td>
+	<td>waitForTextPresent</td>
+	<td>authorization denied</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
 	<td>authorization denied</td>
 	<td></td>
 </tr>
