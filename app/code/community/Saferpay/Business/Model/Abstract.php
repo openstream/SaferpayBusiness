@@ -48,17 +48,18 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 
 	/**
 	 *
-	 * @return Mage_Sales_Model_Order_Payment
+	 * @return Mage_Payment_Model_Info
 	 */
 	public function getInfoInstance()
 	{
-		$info = $this->getData('info_instance');
-		if (! $info)
+		$payment = $this->getData('info_instance');
+		if (! $payment)
 		{
-			$info = $this->getOrder()->getPayment();
-			$this->setInfoInstance($info);
+			$payment = $this->getOrder()->getPayment();
+			Mage::log($payment->debug());
+			$this->setInfoInstance($payment);
 		}
-		return $info;
+		return $payment;
 	}
 
 	/**
@@ -133,9 +134,18 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return md5(mt_rand(0, 1000) . microtime());
 	}
 
-	protected function _addPaymentInfoData($data, $payment = null)
+	public function getPaymentInfoData($key, $payment = null)
 	{
-		if (! isset($payment))
+		if (is_null($payment))
+		{
+			$payment = $this->getInfoInstance();
+		}
+		return $payment->getAdditionalInformation($key);
+	}
+
+	public function addPaymentInfoData(array $data, $payment = null)
+	{
+		if (is_null($payment))
 		{
 			$payment = $this->getInfoInstance();
 		}
@@ -143,8 +153,26 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		{
 			$payment->setAdditionalInformation($k, $v);
 		}
+		if ($payment->getId())
+		{
+			/*
+			 * Required since Magento 1.4.1.1
+			 */
+			$payment->save();
+		}
 		return $this;
 	}
+
+	public function setPaymentInfoData($key, $value = null, $payment = null)
+	{
+		if (is_null($payment))
+		{
+			$payment = $this->getInfoInstance();
+		}
+		$this->setAdditionalInformation(array($key => $value), $payment);
+		return $this;
+	}
+
 
 	public function validateRegisterResponseData($data)
 	{
@@ -231,7 +259,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		$params = array(
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
 			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
-			'CARDREFID' => $payment->getAdditionalInformation('card_ref_id'),
+			'CARDREFID' => $this->getPaymentInfoData('card_ref_id', $payment),
 			'AMOUNT' => intval(round($amount, 2) * 100),
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
 			'ORDERID' => $this->getOrder()->getRealOrderId(),
@@ -272,7 +300,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		 */
 		if (isset($data['ECI']))
 		{
-			$this->getInfoInstance()->setAdditionalInformation('eci', $data['ECI']);
+			$this->setPaymentInfoData('eci', $data['ECI'], $payment);
 		}
 
 		/*
@@ -280,7 +308,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		 */
 		$authcode = isset($data['AUTHCODE']) ? $data['AUTHCODE'] : $data['ORDERID'];
 
-		$this->_addPaymentInfoData(array(
+		$this->addPaymentInfoData(array(
 				'transaction_id' => $data['ID'],
 				'auth_code' => $authcode,
 			), $payment);
@@ -300,7 +328,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 
 	public function getTransactionId()
 	{
-		return $this->getInfoInstance()->getAdditionalInformation('transaction_id');
+		return $this->getPaymentInfoData('transaction_id');
 	}
 
 	protected function _validateAuthorizationResponse($status, $data)
@@ -343,7 +371,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		$params = array(
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
 			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
-			'ID' => $payment->getAdditionalInformation('transaction_id'),
+			'ID' => $this->getPaymentInfoData('transaction_id', $payment),
 			'ORDERID' => $this->getOrder()->getRealOrderId(),
 			'AMOUNT' => intval(round($amount, 2) * 100),
 			'ACTION' => 'Settlement',
@@ -400,7 +428,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	{
 		$payment->setStatus(self::STATUS_DECLINED)
 			->setIsTransactionClosed(1);
-		$payment->setAdditionalInformation('transaction_id', $this->getTransactionId());
+		$this->setPaymentInfoData('transaction_id', $this->getTransactionId(), $payment);
 
 		return $this;
 	}

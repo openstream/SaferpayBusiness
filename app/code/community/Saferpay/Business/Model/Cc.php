@@ -96,7 +96,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		
 		$this->validateRegisterResponseData($data);
 
-		$this->_addPaymentInfoData(array(
+		$this->addPaymentInfoData(array(
 			'card_ref_id' => $data['CARDREFID'],
 			'card_mask' => $data['CARDMASK'],
 			'card_type' => $data['CARDTYPE'],
@@ -113,7 +113,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 
 		$this->validateMpiResponseData($data);
 
-		if (isset($data['ECI'])) $this->getInfoInstance()->setAdditionalInformation('eci', $data['ECI']);
+		if (isset($data['ECI'])) $this->setPaymentInfoData('eci', $data['ECI']);
 
 		return $this;
 	}
@@ -156,7 +156,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		$params = array(
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
 			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
-			'CARDREFID' => $this->getInfoInstance()->getAdditionalInformation('card_ref_id'),
+			'CARDREFID' => $this->getPaymentInfoData('card_ref_id'),
 			'EXP' => $expiry,
 			'AMOUNT' => intval(round($this->getOrder()->getGrandTotal(), 2) * 100),
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
@@ -174,12 +174,12 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			//'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
 			'AMOUNT' => intval(round($this->getOrder()->getGrandTotal(), 2) * 100),
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
-			'MPI_SESSIONID' => $this->getInfoInstance()->getAdditionalInformation('mpi_session_id'),
+			'MPI_SESSIONID' => $this->getPaymentInfoData('mpi_session_id'),
 			'LANGID' => $this->_getMpiLangId(),
 			'SUCCESSLINK' => Mage::getUrl('saferpaybe/process/mpiSuccess', array('_nosid' => 1)),
 			'FAILLINK' => Mage::getUrl('saferpaybe/process/mpiFail', array('_nosid' => 1)),
 			'BACKLINK' => Mage::getUrl('saferpaybe/process/mpiBack', array('_nosid' => 1)),
-			'DESCRIPTION' => 'Magento ' . Mage::getVersion(),
+			'DESCRIPTION' => htmlentities('Magento ' . Mage::getVersion(), ENT_COMPAT, 'UTF-8'),
 		);
 
 		$url = Mage::getStoreConfig('saferpay/settings/payinit_base_url');
@@ -249,7 +249,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			Mage::logException($e);
 		}
 		
-		$this->_addPaymentInfoData($flags->getData());
+		$this->addPaymentInfoData($flags->getData());
 		$this->getOrder()->save();
 		
 		return $flags;
@@ -294,7 +294,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		$this->getOrder()->addStatusHistoryComment(
 			Mage::helper('saferpay_be')->__('3D-Secure Authorization cancelled by customer')
 		)->save();
-		$this->_addPaymentInfoData(array(
+		$this->addPaymentInfoData(array(
 				'eci' => self::ECI_NONE,
 		));
 		return $this;
@@ -312,8 +312,8 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 
 	protected function _checkAllowPaymentsWithoutLiabilityShift()
 	{
-		if ($this->getInfoInstance()->getAdditionalInformation('eci') === self::ECI_NONE &&
-			in_array($this->getInfoInstance()->getAdditionalInformation('card_type'), $this->_get3dSecureCardTypes())
+		if ($this->getPaymentInfoData('eci') === self::ECI_NONE &&
+			in_array($this->getPaymentInfoData('card_type'), $this->_get3dSecureCardTypes())
 		)
 		{
 			if (! $this->getConfigData('allow_non_enrolled'))
@@ -345,7 +345,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	{
 		Mage::log(__METHOD__);
 		$this->getInfoInstance()->setStatus(self::STATUS_UNKNOWN);
-		$eciStatus = $this->getInfoInstance()->getAdditionalInformation('eci');
+		$eciStatus = $this->getPaymentInfoData('eci');
 		if ($eciStatus === self::ECI_NONE)
 		{
 			$this->getOrder()->addStatusHistoryComment(
@@ -360,7 +360,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		/*
 		 * Again, check if ECI == 0! ECI state can change during authorization.
 		 */
-		if ($this->getInfoInstance()->getAdditionalInformation('eci') === self::ECI_NONE)
+		if ($this->getPaymentInfoData('eci') === self::ECI_NONE)
 		{
 			if ($eciStatus != self::ECI_NONE)
 			{
@@ -387,24 +387,25 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 
 	protected function _appendAuthorizeUrlParams($url, Varien_Object $payment, $amount)
 	{
+		$eci = $this->getPaymentInfoData('eci', $payment);
 		$params = array(
-			'EXP' => $this->_get4DigitExpiry(),
-			'CVC' => $this->getCvc(),
-			'NAME' => $payment->getCcOwner(),
-			'ECI' => $payment->getAdditionalInformation('eci'),
-			'MPI_SESSIONID' => $payment->getAdditionalInformation('mpi_session_id'),
+			'EXP'  => $this->_get4DigitExpiry(),
+			'CVC'  => $this->getCvc(),
+			'NAME' => htmlentities($payment->getCcOwner(), ENT_COMPAT, 'UTF-8'),
+			'ECI'  => $eci,
+			'MPI_SESSIONID' => $this->getPaymentInfoData('mpi_session_id', $payment),
 		);
-		if ($payment->getAdditionalInformation('eci') != self::ECI_NONE ||
-			$payment->getAdditionalInformation('xid') != self::DEFAULT_XID
+		if ($eci != self::ECI_NONE ||
+			$this->getPaymentInfoData('xid', $payment) != self::DEFAULT_XID
 		)
 		{
-			$params['XID'] = $payment->getAdditionalInformation('xid');
+			$params['XID'] = $this->getPaymentInfoData('xid', $payment);
 		}
-		if ($payment->getAdditionalInformation('eci') != self::ECI_NONE ||
-			$payment->getAdditionalInformation('cavv') != self::DEFAULT_CAVV
+		if ($eci != self::ECI_NONE ||
+			$this->getPaymentInfoData('cavv', $payment) != self::DEFAULT_CAVV
 		)
 		{
-			$params['CAVV'] = $payment->getAdditionalInformation('cavv');
+			$params['CAVV'] = $this->getPaymentInfoData('cavv', $payment);
 		}
 		$url = $this->_appendQueryParams($url, $params);
 		return parent::_appendAuthorizeUrlParams($url, $payment, $amount);

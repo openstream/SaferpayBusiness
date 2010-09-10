@@ -57,7 +57,7 @@ class Saferpay_Business_Model_Elv extends Saferpay_Business_Model_Abstract
 
 		$this->validateRegisterResponseData($data);
 
-		$this->_addPaymentInfoData(array(
+		$this->addPaymentInfoData(array(
 			'card_ref_id' => $data['CARDREFID'],
 		));
 
@@ -87,7 +87,7 @@ class Saferpay_Business_Model_Elv extends Saferpay_Business_Model_Abstract
 	protected function _appendAuthorizeUrlParams($url, Varien_Object $payment, $amount)
 	{
 		$params = array(
-			'NAME' => $payment->getAdditionalInformation('elv_name'),
+			'NAME' => htmlentities($this->getPaymentInfoData('elv_name'), ENT_COMPAT, 'UTF-8'),
 		);
 		$url = $this->_appendQueryParams($url, $params);
 		return parent::_appendAuthorizeUrlParams($url, $payment, $amount);
@@ -96,7 +96,7 @@ class Saferpay_Business_Model_Elv extends Saferpay_Business_Model_Abstract
 	public function assignData($data)
 	{
 		parent::assignData($data);
-		$this->_addPaymentInfoData($data instanceof Varien_Object ? $data->getData() : $data);
+		$this->addPaymentInfoData($data instanceof Varien_Object ? $data->getData() : $data);
 		return $this;
 	}
 }
