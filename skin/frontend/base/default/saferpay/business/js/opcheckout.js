@@ -53,6 +53,7 @@ Saferpay.Business = Class.create({
 
 					review.save = review.save.wrap(function (origMethod) {
 						saferpay.disableFields();
+						//saferpay.clone3dsNotification();
 						origMethod();
 						saferpay.disableFields(false);
 					});
@@ -103,6 +104,9 @@ Saferpay.Business = Class.create({
 					var response = eval('(' + transport.responseText + ')');
 					if (response.redirect) {
 
+						/*
+						 * Display 3D-Secure notification
+						 */
 						var form = new Element('form', {'action': response.redirect, 'method': 'post', 'id': 'saferpay_be_transport'});
 						$$('body')[0].insert(form);
 						if (String(saferpay.ccnum).length > 0) {
@@ -144,6 +148,19 @@ Saferpay.Business = Class.create({
 					}
 				}
 			});
+		}
+	},
+	clone3dsNotification: function() {
+		if ($('saferpaybe_cc_cc_type') && $('checkout-review-load')) {
+			var elementId = '3ds-notification-' + $F('saferpaybe_cc_cc_type');
+			if ($(elementId)) {
+				/*
+				 * @todo add nice wrapping
+				 */
+				var notification = $(elementId).xml || $(elementId).outerHTML || $(elementId).wrap().innerHTML;
+				notification = notification.replace(/id="3ds-notification-/, 'id="sp3ds-notification-clone');
+				Element.insert($('checkout-review-load'), {after: notification});
+			}
 		}
 	}
 });

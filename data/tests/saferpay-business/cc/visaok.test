@@ -131,6 +131,12 @@
 	<td>//button[@type='submit' and @onclick='review.save();']</td>
 	<td></td>
 </tr>
+<!--Wait for 1 Minute - all the verification and redirects can take quite long-->
+<tr>
+	<td>setTimeout</td>
+	<td>600000</td>
+	<td></td>
+</tr>
 <tr>
 	<td>waitForText</td>
 	<td>//p[1]/strong</td>
