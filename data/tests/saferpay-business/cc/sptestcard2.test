@@ -142,9 +142,9 @@
 	<td></td>
 </tr>
 <tr>
-	<td>waitForText</td>
-	<td>//h1</td>
-	<td>Warenkorb</td>
+	<td>waitForTextPresent</td>
+	<td>authorization denied</td>
+	<td></td>
 </tr>
 <tr>
 	<td>assertTextPresent</td>
