@@ -53,7 +53,7 @@ Saferpay.Business = Class.create({
 
 					review.save = review.save.wrap(function (origMethod) {
 						saferpay.disableFields();
-						//saferpay.clone3dsNotification();
+						saferpay.clone3dsNotification();
 						origMethod();
 						saferpay.disableFields(false);
 					});
@@ -158,7 +158,7 @@ Saferpay.Business = Class.create({
 				 * @todo add nice wrapping
 				 */
 				var notification = $(elementId).xml || $(elementId).outerHTML || $(elementId).wrap().innerHTML;
-				notification = notification.replace(/id="3ds-notification-/, 'id="sp3ds-notification-clone');
+				notification = notification.replace(/id="([^""]*)"/g, 'id="$1-clone"');
 				Element.insert($('checkout-review-load'), {after: notification});
 			}
 		}

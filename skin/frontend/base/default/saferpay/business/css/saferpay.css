@@ -21,3 +21,9 @@
 .sp3ds-notification .sp3ds-logo {
 	 float: right;
 }
+
+#checkout-step-review .sp3ds-notification {
+	padding: 20px 30px 10px 30px;
+	border-left: 1px solid #D9DDE3;
+	border-right: 1px solid #D9DDE3;
+}
