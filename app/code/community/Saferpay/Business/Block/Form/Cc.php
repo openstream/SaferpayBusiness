@@ -46,7 +46,7 @@ class Saferpay_Business_Block_Form_Cc extends Mage_Payment_Block_Form_Cc
 					break;
 				}
 			}
-			/*
+
 			foreach (array('-3ds.png', '-3ds.gif', '-3ds.jpg') as $filetype)
 			{
 				if (file_exists($imageFilename . $filetype))
@@ -55,7 +55,6 @@ class Saferpay_Business_Block_Form_Cc extends Mage_Payment_Block_Form_Cc
 					break;
 				}
 			}
-			 */
 		}
 		return $images;
 	}
