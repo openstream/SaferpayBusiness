@@ -143,12 +143,12 @@
 </tr>
 <tr>
 	<td>waitForTextPresent</td>
-	<td>authorization denied</td>
+	<td>Warenkorb ist leer</td>
 	<td></td>
 </tr>
 <tr>
 	<td>assertTextPresent</td>
-	<td>authorization denied</td>
+	<td>Warenkorb ist leer</td>
 	<td></td>
 </tr>
 

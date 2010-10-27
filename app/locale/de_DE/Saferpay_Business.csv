@@ -35,11 +35,7 @@
 "Account Holder","Kontoinhaber"
 "Direct Debit","Lastschrift"
 "Use 99867-94913159 for testing","Zum Testen kann 99867-94913159 verwendet werden"
-"Redirect ""Verified by Visa""","Weiterleitung ""Verified by Visa"""
-"If ""Verified by Visa"" is activated for your Visa card, you will be redirected to the card-issuer in order to identify yourself.","Wenn ""Verified by Visa"" für Ihre Visa Karte aktiviert ist, werden Sie an Ihre kartenherausgebende Bank weitergeleitet um sich zu identifizieren."
-"Redirect ""MasterCard SecureCode""","Weiterleitung ""MasterCard SecureCode"""
-"If ""MasterCard SecureCode"" is activated for your MasterCard card, you will be redirected to the card-issuer in order to identify yourself.","Wenn ""MasterCard SecureCode"" für Ihre MasterCard Karte aktiviert ist, werden Sie an Ihre kartenherausgebende Bank weitergeleitet um sich zu identifizieren."
-
-
-
-
+"Redirect ""%s""","Weiterleitung ""%s"""
+"You will be redirected to the card-issuer in order to identify yourself.","Sie an Ihre kartenherausgebende Bank weitergeleitet, um sich zu identifizieren."
+"3D-Secure not supported by your card.","3D-Secure wird von ihrer Karte nicht unterstützt."
+"If you are not redirected within 5 seconds please <a href=""%s"">click here</a>.","Wenn Sie nicht innerhalb von 5 Sekunden weitergeleitet werden, <a href=""%s"">klicken Sie bitte hier</a>."

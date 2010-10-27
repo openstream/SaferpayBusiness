@@ -46,7 +46,6 @@ Saferpay.Business = Class.create({
 						saferpay.elvbank = $('saferpaybe_elv_bank_code').value;
 					}
 					saferpay.disableFields();
-					this.onSave = saferpay.update3dsOnReview;
 				}
 				origMethod();
 				if (this.currentMethod && this.currentMethod.substr(0, 11) == 'saferpaybe_') {
@@ -128,44 +127,6 @@ Saferpay.Business = Class.create({
 			}
 		}
 		review.nextStep(transport);
-	},
-	init3dsNotfications: function() {
-		if ($('saferpaybe_cc_cc_type')) {
-			Event.observe($('saferpaybe_cc_cc_type'), 'click', saferpay.update3dsNotification.bind(this));
-			saferpay.update3dsNotification();
-		}
-	},
-	update3dsNotification: function() {
-		var ccOptions = $$('#saferpaybe_cc_cc_type option');
-		if (ccOptions) {
-			ccOptions.each(function(option) {
-				var elementId = '3ds-notification-' + option.value;
-				if ($(elementId)) {
-					if (option.value == $F('saferpaybe_cc_cc_type')) {
-						$(elementId).show();
-					} else {
-						$(elementId).hide();
-					}
-				}
-			});
-		}
-	},
-	clone3dsNotification: function() {
-		/*
-		 * Display 3D-Secure notification under the review block
-		 */
-		if ($('saferpaybe_cc_cc_type') && $('checkout-review-load')) {
-			var elementId = '3ds-notification-' + $F('saferpaybe_cc_cc_type');
-			if ($(elementId)) {
-				var notification = $(elementId).xml || $(elementId).outerHTML || $(elementId).wrap().innerHTML;
-				notification = notification.replace(/id="([^""]*)"/g, 'id="$1-clone"');
-				Element.insert($('checkout-review-load'), {after: notification});
-			}
-		}
-	},
-	update3dsOnReview: function(transport) {
-		payment.nextStep(transport);
-		saferpay.clone3dsNotification();
 	}
 });
 
@@ -182,5 +143,4 @@ Validation.creditCartTypes = Validation.creditCartTypes.merge({
 
 Event.observe(window, 'load', function() {
 	saferpay = new Saferpay.Business();
-	saferpay.init3dsNotfications();
 });

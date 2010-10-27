@@ -47,7 +47,6 @@ class Saferpay_Business_Model_Elv extends Saferpay_Business_Model_Abstract
 	public function getOrderPlaceRedirectUrl()
 	{
 		$url = $this->_getRegisterCardRefUrl();
-		Mage::log($url);
 		return $url;
 	}
 
@@ -66,7 +65,6 @@ class Saferpay_Business_Model_Elv extends Saferpay_Business_Model_Abstract
 
 	public function execute()
 	{
-		Mage::log(__METHOD__);
 		$this->getInfoInstance()->setStatus(self::STATUS_UNKNOWN);
 
 		$this->authorize($this->getInfoInstance(), $this->getOrder()->getGrandTotal());

@@ -1,0 +1,34 @@
+<div id="3ds-notification-<?php echo $this->getCcType() ?>" class="sp3ds-notification">
+	<?php if ($this->is3dsCard()): ?>
+	<div class="sp3ds-logo">
+		<img src="<?php echo $this->getSkinUrl('saferpay/business/images/' . $this->getMethodCode() . '/3ds/' . $this->getCcType() . '.gif') ?>" alt="<?php echo $this->getMethod3dsTitle() ?>"/>
+	</div>
+	<div class="sp3ds-title">
+		<strong><?php echo $this->__('Redirect "%s"', $this->getMethod3dsTitle()) ?></strong>
+	</div>
+	<div class="sp3ds-description">
+		<p>
+			<?php echo $this->__('Your %s Card is activated for "%s"', $this->getMethodLable(), $this->getMethod3dsTitle()) ?>
+		</p>
+		<p>
+			<?php echo $this->__('You will be redirected to the card-issuer in order to identify yourself.') ?>
+		</p>
+	</div>
+	<div class="sp3ds-continue">
+		<p>
+			<?php echo $this->__('If you are not redirected within 5 seconds please <a href="%s">click here</a>.', $this->getRedirectUrl()) ?>
+		</p>
+	</div>
+	<script type="text/javascript">
+//<![CDATA[
+Event.observe(window, 'load', function() {
+//	window.setTimeout(function() {
+//		window.location.href = '<?php echo $this->getRedirectUrl() ?>';
+//	}, 5000);
+});
+//]]>
+	</script>
+	<?php else: ?>
+	<?php echo $this->__('3D-Secure not supported by your card.') ?>
+	<?php endif; ?>
+</div>

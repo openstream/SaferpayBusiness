@@ -76,9 +76,22 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		$this->_redirect('checkout/cart');
 	}
 
+	public function mpiRedirectAction()
+	{
+		$this->loadLayout();
+		$this->_getPayment()->getOrder()->addStatusHistoryComment(
+			Mage::helper('saferpay_be')->__('Initializing 3D-Secure Redirect: display customer notification page')
+		)->save();
+		$this->getLayout()->getBlock('saferpay.mpi.redirect')->addData(array(
+			'card_type_code' => $this->_getPayment()->getPaymentInfoData('card_type'),
+			'redirect_url' => $this->_getPayment()->get3DSecureAuthorizeUrl(),
+			'method' => $this->_getPayment(),
+		));
+		$this->renderLayout();
+	}
+
 	protected function _processMpiResponse()
 	{
-		Mage::log(__METHOD__);
 		try
 		{
 			$this->_verifySignature();
@@ -108,8 +121,6 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 
 	protected function _processRegisterResponse()
 	{
-		Mage::log(__METHOD__);
-		Mage::log($this->getRequest()->getParams());
 		try
 		{
 			$this->_verifySignature();
@@ -121,8 +132,9 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 				$flags = $method->get3DSecureFlags();
 				if ($flags->getEci() === Saferpay_Business_Model_Cc::ECI_ENROLLED)
 				{
+					$this->_redirect('*/*/mpiRedirect');
 					$url = $method->get3DSecureAuthorizeUrl();
-					$this->_redirectUrl($url)->getResponse()->sendHeaders();
+					//$this->_redirectUrl($url)->getResponse()->sendHeaders();
 					return;
 				}
 			}
@@ -161,7 +173,6 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 
 	protected function _executePayment()
 	{
-		Mage::log(__METHOD__);
 		try
 		{
 			$this->_getPayment()->execute();

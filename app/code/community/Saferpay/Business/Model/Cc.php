@@ -168,7 +168,6 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 
 	public function get3DSecureAuthorizeUrl()
 	{
-		Mage::log(__METHOD__);
 		$params = array(
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
 			//'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
@@ -203,7 +202,6 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	 */
 	public function get3DSecureFlags()
 	{
-		Mage::log(__METHOD__);
 		/*
 		 * Default Values
 		 */
@@ -217,7 +215,6 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		{
 			$url = $this->_getVerify3DSecureUrl();
 			$response = trim(file_get_contents($url));
-			Mage::log('Validate 3D Enrolement response: ' . $response);
 			list($status, $xml) = $this->_splitResponseData($response);
 			$data = $this->_parseResponseXml($xml);
 			Mage::log(array('Validate 3D Enrolement response' => array('status' => $status, 'xml' => $xml, 'data' => $data)));
@@ -227,7 +224,6 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			if (isset($data['ECI'])) $flags->setEci($data['ECI']);
 			if (isset($data['XID'])) $flags->setXid($data['XID']);
 			if (isset($data['CAVV'])) $flags->setCavv($data['CAVV']);
-			//Mage::log(array('3D-Secure Flags' => $flags->getData()));
 		}
 		catch (Exception $e)
 		{
@@ -313,7 +309,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	protected function _checkAllowPaymentsWithoutLiabilityShift()
 	{
 		if ($this->getPaymentInfoData('eci') === self::ECI_NONE &&
-			in_array($this->getPaymentInfoData('card_type'), $this->_get3dSecureCardTypes())
+			in_array($this->getPaymentInfoData('card_type'), $this->get3dSecureCardTypes())
 		)
 		{
 			if (! $this->getConfigData('allow_non_enrolled'))
@@ -336,14 +332,13 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	 *
 	 * @return array
 	 */
-	protected function _get3dSecureCardTypes()
+	public function get3dSecureCardTypes()
 	{
 		return array(self::CARD_TYPE_MASTERCARD, self::CARD_TYPE_VISA);
 	}
 
 	public function execute()
 	{
-		Mage::log(__METHOD__);
 		$this->getInfoInstance()->setStatus(self::STATUS_UNKNOWN);
 		$eciStatus = $this->getPaymentInfoData('eci');
 		if ($eciStatus === self::ECI_NONE)

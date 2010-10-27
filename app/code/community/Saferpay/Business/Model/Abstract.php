@@ -39,8 +39,6 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	{
 		$url = Mage::getStoreConfig('saferpay/settings/payinit_base_url');
 		$url = $this->_appendRegisterCardRefUrlParams($url);
-		Mage::log(__METHOD__);
-		Mage::log('request init url: ' . $url);
 		$registerCardRefUrl = trim(file_get_contents($url));
 
 		return $registerCardRefUrl;
@@ -56,7 +54,6 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		if (! $payment)
 		{
 			$payment = $this->getOrder()->getPayment();
-			Mage::log($payment->debug());
 			$this->setInfoInstance($payment);
 		}
 		return $payment;
@@ -216,7 +213,6 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 
 	public function verifySignature($data, $sig)
 	{
-		Mage::log(__METHOD__);
 		$params = array(
 			'DATA' => $data,
 			'SIGNATURE' => $sig
@@ -225,12 +221,10 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		$url = $this->_appendQueryParams($url, $params);
 		$response = trim(file_get_contents($url));
 		list($status, $params) = $this->_splitResponseData($response);
-		Mage::log(array('validation result' => $response));
 		if ($status != 'OK')
 		{
 			$this->_throwException('Signature invalid, possible manipulation detected! Validation Result: "%s"', $response);
 		}
-		Mage::log('Signature OK');
 		return $this;
 	}
 
@@ -296,11 +290,19 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		$this->_validateAuthorizationResponse($status, $data);
 
 		/*
-		 * ECI Response übernehmen wenn gesetzt
+		 * ECI, CAVV und XID aus Response übernehmen wenn vorhanden
 		 */
 		if (isset($data['ECI']))
 		{
 			$this->setPaymentInfoData('eci', $data['ECI'], $payment);
+		}
+		if (isset($data['CAVV']))
+		{
+			$this->setPaymentInfoData('cavv', $data['CAVV'], $payment);
+		}
+		if (isset($data['XID']))
+		{
+			$this->setPaymentInfoData('xid', $data['XID'], $payment);
 		}
 
 		/*
@@ -378,7 +380,6 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		);
 		$url = Mage::getStoreConfig('saferpay/settings/paycomplete_base_url');
 		$url = $this->_appendQueryParams($url, $params);
-		Mage::log($url);
 		return $url;
 	}
 
@@ -440,7 +441,6 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	 */
 	protected function _createInvoice()
 	{
-		Mage::log(__METHOD__);
 		if (! $this->getOrder()->canInvoice()) {
 			return;
 		}

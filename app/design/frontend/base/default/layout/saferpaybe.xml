@@ -24,7 +24,18 @@
 	<checkout_onepage_index>
 		<reference name="head">
 			<action method="addItem"><type>skin_js</type><name>saferpay/business/js/opcheckout.js</name><params/><if/></action>
-			<action method="addItem"><type>skin_css</type><name>saferpay/business/css/saferpay.css</name><params/><if/></action>
 		</reference>
 	</checkout_onepage_index>
+
+	<saferpay_be_process_mpiredirect>
+		<reference name="root">
+			<action method="setTemplate"><template>page/1column.phtml</template></action>
+		</reference>
+		<reference name="head">
+			<action method="addItem"><type>skin_css</type><name>saferpay/business/css/saferpay.css</name><params/><if/></action>
+		</reference>
+		<reference name="content">
+			<block type="saferpay_be/mpi_redirect" name="saferpay.mpi.redirect" template="saferpay/business/mpi/redirect.phtml"/>
+		</reference>
+	</saferpay_be_process_mpiredirect>
 </layout>

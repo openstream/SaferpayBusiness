@@ -82,37 +82,6 @@ $_imgs  = $this->getPaymentImageSrcs($_code);
     </li>
     <?php endif; ?>
 
-	<div id="3ds-notification-VI" class="sp3ds-notification" style="display: none;">
-		<div class="sp3ds-logo">
-			<img src="<?php echo $this->getSkinUrl('saferpay/business/images/' . $_code . '/3ds/VI.gif') ?>" />
-		</div>
-		<div class="sp3ds-title">
-			<strong><?php echo $this->__('Redirect "Verified by Visa"') ?></strong>
-		</div>
-		<div class="sp3ds-description">
-			<p>
-				<?php echo $this->__('If "Verified by Visa" is activated for your Visa card, you will be redirected to the card-issuer in order to identify yourself.') ?>
-			</p>
-		</div>
-	</div>
-
-	<div id="3ds-notification-MC" class="sp3ds-notification" style="display: none;">
-		<div class="sp3ds-logo">
-			<img src="<?php echo $this->getSkinUrl('saferpay/business/images/' . $_code . '/3ds/MC.gif') ?>" />
-		</div>
-		<div class="sp3ds-title">
-			<strong><?php echo $this->__('Redirect "MasterCard SecureCode"') ?></strong>
-		</div>
-		<div class="sp3ds-description">
-			<p>
-				<?php echo $this->__('If "MasterCard SecureCode" is activated for your MasterCard card, you will be redirected to the card-issuer in order to identify yourself.') ?>
-			</p>
-		</div>
-	</div>
-	<script type="text/javascript">
-		if(typeof saferpay != 'undefined') saferpay.init3dsNotfications();
-	</script>
-
     <?php if ($_imgs): ?>
     <li>
         <div style="padding:10px 15px 15px;">
