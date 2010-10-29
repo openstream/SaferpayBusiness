@@ -216,6 +216,13 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 			$methodCode = $this->_getSession()->getSaferpayPaymentMethod();
 			$model = Mage::getStoreConfig('payment/' . $methodCode . '/model');
 			$this->_payment = Mage::getModel($model);
+			if (! $this->_payment)
+			{
+				Mage::log('Unable to recreate payment method from value user session: ' . $methodCode);
+				Mage::throwException(
+					Mage::helper('saferpay_be')->__('An error occured while processing the payment: unable to recreate payment instance for method "%s"', $methodCode)
+				);
+			}
 		}
 		return $this->_payment;
 	}
