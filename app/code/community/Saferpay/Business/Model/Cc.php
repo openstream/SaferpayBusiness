@@ -95,7 +95,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		$data = $this->_parseResponseXml($data);
 		
 		$this->validateRegisterResponseData($data);
-
+		//Mage::log(array('register response data' => $data));
 		$this->addPaymentInfoData(array(
 			'card_ref_id' => $data['CARDREFID'],
 			'card_mask' => $data['CARDMASK'],
