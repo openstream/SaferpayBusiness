@@ -113,7 +113,18 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 
 		$this->validateMpiResponseData($data);
 
-		if (isset($data['ECI'])) $this->setPaymentInfoData('eci', $data['ECI']);
+		if (isset($data['ECI']))
+		{
+			$this->setPaymentInfoData('eci', $data['ECI']);
+		}
+		if (isset($data['CAVV']))
+		{
+			$this->setPaymentInfoData('cavv', $data['CAVV']);
+		}
+		if (isset($data['XID']))
+		{
+			$this->setPaymentInfoData('xid', $data['XID']);
+		}
 
 		return $this;
 	}
