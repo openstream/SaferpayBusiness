@@ -231,10 +231,22 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			Mage::log(array('Validate 3D Enrolement response' => array('status' => $status, 'xml' => $xml, 'data' => $data)));
 			$this->_validate3DSecureInitResponse($status, $data);
 
-			if (isset($data['MPI_SESSIONID'])) $flags->setMpiSessionId($data['MPI_SESSIONID']);
-			if (isset($data['ECI'])) $flags->setEci($data['ECI']);
-			if (isset($data['XID'])) $flags->setXid($data['XID']);
-			if (isset($data['CAVV'])) $flags->setCavv($data['CAVV']);
+			if (isset($data['MPI_SESSIONID']))
+			{
+				$flags->setMpiSessionId($data['MPI_SESSIONID']);
+			}
+			if (isset($data['ECI']))
+			{
+				$flags->setEci($data['ECI']);
+			}
+			if (isset($data['XID']))
+			{
+				$flags->setXid($data['XID']);
+			}
+			/*
+			 * Do not check for CAVV here - that value is not returned here
+			 * according to the email from Mr. T. Schäfer on 11. Nov. 2010.
+			 */
 		}
 		catch (Exception $e)
 		{
