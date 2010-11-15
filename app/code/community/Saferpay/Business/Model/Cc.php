@@ -228,7 +228,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			$response = trim(file_get_contents($url));
 			list($status, $xml) = $this->_splitResponseData($response);
 			$data = $this->_parseResponseXml($xml);
-			Mage::log(array('Validate 3D Enrolement response' => array('status' => $status, 'xml' => $xml, 'data' => $data)));
+			//Mage::log(array('Validate 3D Enrolement response' => array('status' => $status, 'xml' => $xml, 'data' => $data)));
 			$this->_validate3DSecureInitResponse($status, $data);
 
 			if (isset($data['MPI_SESSIONID']))

@@ -277,16 +277,15 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	{
 		Mage::log(__METHOD__);
 		$url = $this->_getAuthorizeUrl($payment, $amount);
-		Mage::log($url);
+		//Mage::log($url);
 		$response = trim(file_get_contents($url));
-		Mage::log('Response: ' . $response);
 		list($status, $xml) = $this->_splitResponseData($response);
 		if ($status != 'OK')
 		{
 			$this->_throwException($xml);
 		}
 		$data = $this->_parseResponseXml($xml);
-		Mage::log(array('Authorization Response' => $data, 'Status' => $status));
+		//Mage::log(array('Authorization Response' => $data, 'Status' => $status));
 		$this->_validateAuthorizationResponse($status, $data);
 
 		/*
@@ -395,9 +394,9 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		Mage::log(__METHOD__);
 		$url = $this->_getCaptureUrl($payment, $amount);
 		$response = trim(file_get_contents($url));
-		Mage::log('Capture Response: ' . $response);
 		list($status, $xml) = $this->_splitResponseData($response);
 		$data = $this->_parseResponseXml($xml);
+		//Mage::log(array('Capture Response' => $data, 'Status' => $status));
 		$this->_validateCaptureResponse($status, $data);
 
 		return $this;
