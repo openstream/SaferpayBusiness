@@ -166,7 +166,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		{
 			$payment = $this->getInfoInstance();
 		}
-		$this->setAdditionalInformation(array($key => $value), $payment);
+		$payment->setAdditionalInformation($key, $value);
 		return $this;
 	}
 
