@@ -356,7 +356,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 				{
 					$msg = Mage::helper('saferpay_be')->__('Error authorizing payment: %s', $response);
 				}
-				Mage::log($data);
+				Mage::log(array('Authorization response error data' => $data));
 				Mage::throwException($msg);
 			}
 			if ($data['ORDERID'] != $this->getOrder()->getRealOrderId())
