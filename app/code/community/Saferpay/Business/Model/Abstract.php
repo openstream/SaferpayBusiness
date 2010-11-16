@@ -277,7 +277,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	{
 		Mage::log(__METHOD__);
 		$url = $this->_getAuthorizeUrl($payment, $amount);
-		//Mage::log($url);
+		//Mage::log('Authorize url: ' . $url);
 		$response = trim(file_get_contents($url));
 		list($status, $xml) = $this->_splitResponseData($response);
 		if ($status != 'OK')
@@ -334,35 +334,47 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 
 	protected function _validateAuthorizationResponse($status, $data)
 	{
-		if (
-			$status != 'OK' ||
-			! isset($data['RESULT']) ||
-			! isset($data['MSGTYPE']) ||
-			$data['MSGTYPE'] != 'AuthorizationResponse'
-		)
+		try
 		{
-			$msg = Mage::helper('saferpay_be')->__('Error parsing response: %s', $response);
-			Mage::throwException($msg);
-		}
-		if ($data['RESULT'] !== '0')
-		{
-			if (isset($data['AUTHMESSAGE']) && $data['AUTHMESSAGE'])
+			if (
+				$status != 'OK' ||
+				! isset($data['RESULT']) ||
+				! isset($data['MSGTYPE']) ||
+				$data['MSGTYPE'] != 'AuthorizationResponse'
+			)
 			{
-				$msg = Mage::helper('saferpay_be')->__($data['AUTHMESSAGE']);
+				$msg = Mage::helper('saferpay_be')->__('Error parsing response: %s', $response);
+				Mage::throwException($msg);
 			}
-			else
+			if ($data['RESULT'] !== '0')
 			{
-				$msg = Mage::helper('saferpay_be')->__('Error authorizing payment: %s', $response);
+				if (isset($data['AUTHMESSAGE']) && $data['AUTHMESSAGE'])
+				{
+					$msg = Mage::helper('saferpay_be')->__($data['AUTHMESSAGE']);
+				}
+				else
+				{
+					$msg = Mage::helper('saferpay_be')->__('Error authorizing payment: %s', $response);
+				}
+				Mage::log($data);
+				Mage::throwException($msg);
 			}
-			Mage::throwException($msg);
+			if ($data['ORDERID'] != $this->getOrder()->getRealOrderId())
+			{
+				$msg = Mage::helper('saferpay_be')->__('Error: authorization requested for order "%s", recieved authorization for order id "%s"',
+					$this->getOrder()->getRealOrderId(),
+					$data['ORDERID']
+				);
+				Mage::throwException($msg);
+			}
 		}
-		if ($data['ORDERID'] != $this->getOrder()->getRealOrderId())
+		catch (Exception $e)
 		{
-			$msg = Mage::helper('saferpay_be')->__('Error: authorization requested for order "%s", recieved authorization for order id "%s"',
-				$this->getOrder()->getRealOrderId(),
-				$data['ORDERID']
-			);
-			Mage::throwException($msg);
+			/*
+			 * Add error message to order comment history
+			 */
+			$this->getOrder()->addStatusHistoryComment($e->getMessage())->save();
+			throw $e;
 		}
 		return $this;
 	}
