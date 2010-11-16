@@ -26,7 +26,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	const ECI_NONE = '0';
 
 	const DEFAULT_XID = '--';
-	const DEFAULT_CAVV = '--';
+	const DEFAULT_CAVV = '';
 
 	const CARD_TYPE_AMEX       = 19265;
 	const CARD_TYPE_DINERS     = 19268;
