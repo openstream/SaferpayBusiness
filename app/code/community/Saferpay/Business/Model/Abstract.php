@@ -277,7 +277,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	{
 		Mage::log(__METHOD__);
 		$url = $this->_getAuthorizeUrl($payment, $amount);
-		//Mage::log('Authorize url: ' . $url);
+		Mage::log('Authorize url: ' . $url);
 		$response = trim(file_get_contents($url));
 		list($status, $xml) = $this->_splitResponseData($response);
 		if ($status != 'OK')
