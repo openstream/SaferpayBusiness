@@ -419,7 +419,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		{
 			$params['XID'] = $this->getPaymentInfoData('xid', $payment);
 		}
-		if ($eci != self::ECI_NONE ||
+		if ($eci != self::ECI_NONE &&
 			$this->getPaymentInfoData('cavv', $payment) != self::DEFAULT_CAVV
 		)
 		{
