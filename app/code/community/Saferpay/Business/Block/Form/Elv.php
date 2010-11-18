@@ -60,4 +60,9 @@ class Saferpay_Business_Block_Form_Elv extends Mage_Payment_Block_Form
 		}
 		return $images;
 	}
+
+	public function getPaymentImageSrc()
+	{
+		return $this->getSkinUrl('saferpay/business/images/saferpaybe_elv.gif');
+	}
 }
