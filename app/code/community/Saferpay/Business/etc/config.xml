@@ -163,8 +163,7 @@
 			<settings>
 				<saferpay_password></saferpay_password>
 				<saferpay_account_id></saferpay_account_id>
-				<!-- Adapters: Zend_Http_Client_Adapter_Socket or Zend_Http_Client_Adapter_Curl -->
-				<http_client_adapter>Zend_Http_Client_Adapter_Curl</http_client_adapter>
+				<http_client_adapter>stream_wrapper</http_client_adapter>
 				<!-- Card registration URL and MPI URL generation: -->
 				<payinit_base_url>https://www.saferpay.com/hosting/CreatePayInit.asp</payinit_base_url>
 				<!-- Capture and cancel -->

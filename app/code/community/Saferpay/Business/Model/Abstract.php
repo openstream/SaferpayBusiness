@@ -506,20 +506,31 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 
 	/**
 	 * Because on some systems url stream wrappers for https seem to be disabled
-	 * default to Zend_Http_Client using a Curl adapter as the default.
+	 * offer configuration option to select cURL as an alternative solution.
 	 *
 	 * @param string $url
 	 * @return string
 	 */
 	protected function _readUrl($url)
 	{
-		$options = array();
-		if ($apapter = Mage::getStoreConfig('saferpay/settings/http_client_adapter'))
+		$adapter = Mage::getStoreConfig('saferpay/settings/http_client_adapter');
+		if (
+				'stream_wrapper' !== $adapter &&
+				class_exists($adapter, true) &&
+				($adapter = new $adapter) &&
+				$adapter instanceof Zend_Http_Client_Adapter_Interface
+			)
 		{
-			$options['adapter'] = new $adapter;
+			$client = new Zend_Http_Client($url, array('adapter' => $adapter));
+			$contents = $client->request()->getBody();
 		}
-		$client = new Zend_Http_Client($url, $options);
-		$contents = $client->request()->getBody();
+		else
+		{
+			/*
+			 * Default to php stream wrapper access
+			 */
+			$contents = file_get_contents($url);
+		}
 		return $contents;
 	}
 }

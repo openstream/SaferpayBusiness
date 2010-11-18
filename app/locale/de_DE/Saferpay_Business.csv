@@ -41,3 +41,8 @@
 "You will be redirected to the card-issuer in order to identify yourself.","Sie werden an Ihre kartenherausgebende Bank weitergeleitet, um sich zu identifizieren."
 "3D-Secure not supported by your card.","3D-Secure wird von ihrer Karte nicht unterstützt."
 "If you are not redirected within 5 seconds please <a href=""%s"">click here</a>.","Wenn Sie nicht innerhalb von 5 Sekunden weitergeleitet werden, <a href=""%s"">klicken Sie bitte hier</a>."
+"SSL Access Method","SSL Zugriff"
+"File (PHP Stream Wrappers)","File"
+"cURL","cURL"
+"Socket","Socket"
+
