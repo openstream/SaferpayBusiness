@@ -194,7 +194,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 
 		$url = Mage::getStoreConfig('saferpay/settings/payinit_base_url');
 		$url = $this->_appendQueryParams($url, $params);
-		$response = trim(file_get_contents($url));
+		$response = trim($this->_readUrl($url));
 		if (substr($response, 0, 5) === 'ERROR')
 		{
 			Mage::throwException(
@@ -225,7 +225,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		try
 		{
 			$url = $this->_getVerify3DSecureUrl();
-			$response = trim(file_get_contents($url));
+			$response = trim($this->_readUrl($url));
 			list($status, $xml) = $this->_splitResponseData($response);
 			$data = $this->_parseResponseXml($xml);
 			Mage::log(array('Validate 3D Enrolement response' => array('status' => $status, 'xml' => $xml, 'data' => $data)));

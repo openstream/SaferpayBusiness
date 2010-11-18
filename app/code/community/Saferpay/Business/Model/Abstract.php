@@ -39,7 +39,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	{
 		$url = Mage::getStoreConfig('saferpay/settings/payinit_base_url');
 		$url = $this->_appendRegisterCardRefUrlParams($url);
-		$registerCardRefUrl = trim(file_get_contents($url));
+		$registerCardRefUrl = trim($this->_readUrl($url));
 
 		return $registerCardRefUrl;
 	}
@@ -219,7 +219,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		);
 		$url = Mage::getStoreConfig('saferpay/settings/verifysig_base_url');
 		$url = $this->_appendQueryParams($url, $params);
-		$response = trim(file_get_contents($url));
+		$response = trim($this->_readUrl($url));
 		list($status, $params) = $this->_splitResponseData($response);
 		if ($status != 'OK')
 		{
@@ -278,7 +278,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		Mage::log(__METHOD__);
 		$url = $this->_getAuthorizeUrl($payment, $amount);
 		Mage::log('Authorize url: ' . $url);
-		$response = trim(file_get_contents($url));
+		$response = trim($this->_readUrl($url));
 		list($status, $xml) = $this->_splitResponseData($response);
 		if ($status != 'OK')
 		{
@@ -405,7 +405,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	{
 		Mage::log(__METHOD__);
 		$url = $this->_getCaptureUrl($payment, $amount);
-		$response = trim(file_get_contents($url));
+		$response = trim($this->_readUrl($url));
 		list($status, $xml) = $this->_splitResponseData($response);
 		$data = $this->_parseResponseXml($xml);
 		//Mage::log(array('Capture Response' => $data, 'Status' => $status));
@@ -502,5 +502,24 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	{
 		$paymentAction = $this->getConfigData('payment_action');
 		return empty($paymentAction) ? true : $paymentAction;
+	}
+
+	/**
+	 * Because on some systems url stream wrappers for https seem to be disabled
+	 * default to Zend_Http_Client using a Curl adapter as the default.
+	 *
+	 * @param string $url
+	 * @return string
+	 */
+	protected function _readUrl($url)
+	{
+		$options = array();
+		if ($apapter = Mage::getStoreConfig('saferpay/settings/http_client_adapter'))
+		{
+			$options['adapter'] = new $adapter;
+		}
+		$client = new Zend_Http_Client($url, $options);
+		$contents = $client->request()->getBody();
+		return $contents;
 	}
 }
