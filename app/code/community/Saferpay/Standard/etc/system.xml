@@ -38,7 +38,15 @@
 					<show_in_website>0</show_in_website>
 					<show_in_store>0</show_in_store>
 					<fields>
-						<saferpay_password translate="label">
+						<saferpay_account_id translate="label comment">
+							<label>Account-ID</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>10</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</saferpay_account_id>
+						<saferpay_password translate="label comment">
 							<label>Hosting Password</label>
 							<frontend_type>text</frontend_type>
 							<sort_order>20</sort_order>
@@ -46,14 +54,6 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>0</show_in_store>
 						</saferpay_password>
-						<saferpay_account_id translate="label">
-							<label>Account-ID</label>
-							<frontend_type>text</frontend_type>
-							<sort_order>30</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>0</show_in_store>
-						</saferpay_account_id>
 					</fields>
 				</settings>
 			</groups>
