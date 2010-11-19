@@ -254,7 +254,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
 			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
 			'CARDREFID' => $this->getPaymentInfoData('card_ref_id', $payment),
-			'AMOUNT' => intval(round($amount, 2) * 100),
+			'AMOUNT' => intval(Mage::helper('saferpay_be')->round($amount, 2) * 100),
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
 			'ORDERID' => $this->getOrder()->getRealOrderId(),
 			'DESCRIPTION' => Mage::getStoreConfig('general/store_information/name', $this->getOrder()->getStoreId()),
@@ -314,7 +314,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		$payment->setStatus(self::STATUS_APPROVED)
 			->setIsTransactionClosed(0);
 
-		$amount = Mage::helper('core')->formatPrice(round($amount, 2), false);
+		$amount = Mage::helper('core')->formatPrice(Mage::helper('saferpay_be')->round($amount, 2), false);
 		$this->getOrder()->addStatusHistoryComment(
 				Mage::helper('saferpay_be')->__('Authorization for %s successfull (AUTHCODE %s, ID %s)', $amount, $authcode, $data['ID'])
 			)->save(); // save history model
@@ -383,7 +383,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
 			'ID' => $this->getPaymentInfoData('transaction_id', $payment),
 			'ORDERID' => $this->getOrder()->getRealOrderId(),
-			'AMOUNT' => intval(round($amount, 2) * 100),
+			'AMOUNT' => intval(Mage::helper('saferpay_be')->round($amount, 2) * 100),
 			'ACTION' => 'Settlement',
 		);
 		$url = Mage::getStoreConfig('saferpay/settings/paycomplete_base_url');

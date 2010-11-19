@@ -21,5 +21,14 @@
 
 class Saferpay_Business_Helper_Data extends Mage_Core_Helper_Data
 {
-	
+	/**
+	 * Unified round() implementation for the Saferpay extension
+	 *
+	 * @param mixed $value String, Integer or Float
+	 * @return float
+	 */
+	public function round($value)
+	{
+		return Zend_Locale_Math::round($value, 2);
+	}
 }

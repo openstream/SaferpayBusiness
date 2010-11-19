@@ -168,7 +168,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
 			'CARDREFID' => $this->getPaymentInfoData('card_ref_id'),
 			'EXP' => $expiry,
-			'AMOUNT' => intval(round($this->getOrder()->getGrandTotal(), 2) * 100),
+			'AMOUNT' => intval(Mage::helper('saferpay_be')->round($this->getOrder()->getGrandTotal(), 2) * 100),
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
 		);
 		$url = Mage::getStoreConfig('saferpay/settings/verify_base_url');
@@ -181,7 +181,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		$params = array(
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
 			//'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
-			'AMOUNT' => intval(round($this->getOrder()->getGrandTotal(), 2) * 100),
+			'AMOUNT' => intval(Mage::helper('saferpay_be')->round($this->getOrder()->getGrandTotal(), 2) * 100),
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
 			'MPI_SESSIONID' => $this->getPaymentInfoData('mpi_session_id'),
 			'LANGID' => $this->_getMpiLangId(),

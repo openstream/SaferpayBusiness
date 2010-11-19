@@ -242,7 +242,7 @@ abstract class Saferpay_Standard_Model_Abstract extends Mage_Payment_Model_Metho
 
 		$params = array(
 			'ACCOUNTID'             => Mage::helper('saferpay')->getSetting('saferpay_account_id'),
-			'AMOUNT'                => intval(round($this->getOrder()->getGrandTotal(), 2) * 100),
+			'AMOUNT'                => intval(Mage::helper('saferpay')->round($this->getOrder()->getGrandTotal(), 2) * 100),
 			'CURRENCY'              => $this->getOrder()->getOrderCurrencyCode(),
 			'DESCRIPTION'           => $this->getOrder()->getStore()->getWebsite()->getName(),
 			'CCCVC'                 => 'yes',
