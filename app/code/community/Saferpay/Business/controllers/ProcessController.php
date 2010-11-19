@@ -25,31 +25,26 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 
 	public function registerSuccessAction()
 	{
-		Mage::log(__METHOD__);
 		$this->_processRegisterResponse();
 	}
 
 	public function registerFailAction()
 	{
-		Mage::log(__METHOD__);
 		$this->_processRegisterResponse();
 	}
 
 	public function mpiSuccessAction()
 	{
-		Mage::log(__METHOD__);
 		$this->_processMpiResponse();
 	}
 
 	public function mpiFailAction()
 	{
-		Mage::log(__METHOD__);
 		$this->_processMpiResponse();
 	}
 
 	public function mpiBackAction()
 	{
-		Mage::log(__METHOD__);
 		try
 		{
 			$this->_getPayment()->mpiAuthenticationCancelled();
@@ -175,7 +170,6 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		try
 		{
 			$this->_getPayment()->execute();
-			Mage::log('execute ok');
 			$this->_redirect('checkout/onepage/success');
 			return;
 		}
@@ -217,7 +211,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 			$this->_payment = Mage::getModel($model);
 			if (! $this->_payment)
 			{
-				Mage::log('Unable to recreate payment method from value user session: ' . $methodCode);
+				Mage::log('Unable to recreate payment method from value user session ' . $methodCode . '. Session timed out?');
 				Mage::throwException(
 					Mage::helper('saferpay_be')->__('An error occured while processing the payment: unable to recreate payment instance for method "%s"', $methodCode)
 				);
