@@ -21,6 +21,11 @@
 
 class Saferpay_Business_Model_System_Config_Source_Payment_Cctype
 {
+	/**
+	 * Return the credit card types supported by the saferpay business gateway formatted as an option array
+	 *
+	 * @return array
+	 */
 	public function toOptionArray()
 	{
 		$options = array();

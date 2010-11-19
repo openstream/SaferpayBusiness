@@ -74,22 +74,44 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return $url;
 	}
 
+	/**
+	 * Return the query parameter name for the CVC parameter
+	 *
+	 * @return string
+	 */
 	public function getCvcParamName()
 	{
 		return $this->_cvcParamName;
 	}
 
+	/**
+	 * Save the credit card cvc code in the customer session
+	 *
+	 * @param string $cvc
+	 * @return Saferpay_Business_Model_Cc
+	 */
 	public function setCvc($cvc)
 	{
 		$this->getSession()->setSpCvc($cvc);
 		return $this;
 	}
 
+	/**
+	 * Return the credit card cvc code saved in the customer session
+	 *
+	 * @return string
+	 */
 	public function getCvc()
 	{
 		return $this->getSession()->getSpCvc();
 	}
 
+	/**
+	 * Save the credit card registration response data on the payment info instance
+	 *
+	 * @param array $data
+	 * @return Saferpay_Business_Model_Cc
+	 */
 	public function importRegisterResponseData($data)
 	{
 		$data = $this->_parseResponseXml($data);
@@ -106,6 +128,12 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return $this;
 	}
 
+	/**
+	 * Save the 3D-secure authentication response data on the payment info instance
+	 *
+	 * @param array $data
+	 * @return Saferpay_Business_Model_Cc
+	 */
 	public function importMpiResponseData($data)
 	{
 		$data = $this->_parseResponseXml($data);
@@ -128,6 +156,12 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return $this;
 	}
 
+	/**
+	 * Validate the response data from a 3D-secure authentication redirect
+	 *
+	 * @param array $data
+	 * @return Saferpay_Business_Model_Cc
+	 */
 	public function validateMpiResponseData($data)
 	{
 		if (! isset($data['RESULT']))
@@ -157,6 +191,11 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return $this;
 	}
 
+	/**
+	 * Return the URL for the 3D-secure authentication redirect response validation
+	 *
+	 * @return string
+	 */
 	protected function _getVerify3DSecureUrl()
 	{
 		$expiry = sprintf('%02d%02d',
@@ -176,6 +215,11 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return $url;
 	}
 
+	/**
+	 * Return the URL for the 3D-secure authentication redirect
+	 *
+	 * @return string
+	 */
 	public function get3DSecureAuthorizeUrl()
 	{
 		$params = array(
@@ -207,6 +251,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	}
 
 	/**
+	 * Return the 3D-secure settings for the credit card
 	 *
 	 * @return Varien_Object
 	 */
@@ -270,6 +315,13 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return $flags;
 	}
 
+	/**
+	 * Validate the 3D-secure initialization response
+	 *
+	 * @param string $status
+	 * @param array $data
+	 * @return Saferpay_Business_Model_Cc
+	 */
 	protected function _validate3DSecureInitResponse($status, $data)
 	{
 		if (
@@ -304,6 +356,11 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return $this;
 	}
 
+	/**
+	 * Register that a 3D-secure authentication was cancelled by the customer
+	 *
+	 * @return Saferpay_Business_Model_Cc
+	 */
 	public function mpiAuthenticationCancelled()
 	{
 		$this->getOrder()->addStatusHistoryComment(
@@ -315,6 +372,11 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return $this;
 	}
 
+	/**
+	 * Return the language ID for the MPI 3D-secure user interface.
+	 *
+	 * @return string
+	 */
 	protected function _getMpiLangId()
 	{
 		$lang = $this->_getOrderLang();
@@ -325,6 +387,12 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return $lang;
 	}
 
+	/**
+	 * Check the system configuration if the merchant wants to allow credit card
+	 * payments without a 3D-secure liability shift
+	 *
+	 * @return bool
+	 */
 	protected function _checkAllowPaymentsWithoutLiabilityShift()
 	{
 		if ($this->getPaymentInfoData('eci') === self::ECI_NONE &&
@@ -356,6 +424,11 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return array(self::CARD_TYPE_MASTERCARD, self::CARD_TYPE_VISA);
 	}
 
+	/**
+	 * Authorize the grand total of the order, then, if configured, capture the amount.
+	 *
+	 * @return Saferpay_Business_Model_Cc 
+	 */
 	public function execute()
 	{
 		$this->getInfoInstance()->setStatus(self::STATUS_UNKNOWN);
@@ -399,6 +472,14 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return $this;
 	}
 
+	/**
+	 * Append the authorization request query parameters to the specified URL
+	 *
+	 * @param string $url
+	 * @param Varien_Object $payment
+	 * @param mixed $amount
+	 * @return string
+	 */
 	protected function _appendAuthorizeUrlParams($url, Varien_Object $payment, $amount)
 	{
 		$eci = $this->getPaymentInfoData('eci', $payment);
@@ -423,6 +504,11 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return parent::_appendAuthorizeUrlParams($url, $payment, $amount);
 	}
 
+	/**
+	 * Return the credit card expiry date as a 4 digit string MMYY
+	 *
+	 * @return string
+	 */
 	protected function _get4DigitExpiry()
 	{
 		$expiry = sprintf('%02d%02d',

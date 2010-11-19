@@ -43,6 +43,9 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		$this->_processMpiResponse();
 	}
 
+	/**
+	 * Handle the case when a customer cancelles a 3D-secure authentication
+	 */
 	public function mpiBackAction()
 	{
 		try
@@ -71,6 +74,9 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		$this->_redirect('checkout/cart');
 	}
 
+	/**
+	 * Redirect the customer to the 3D-secure MPI after displaying a notification
+	 */
 	public function mpiRedirectAction()
 	{
 		$this->loadLayout();
@@ -85,6 +91,9 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		$this->renderLayout();
 	}
 
+	/**
+	 * Process the mpi redirect response
+	 */
 	protected function _processMpiResponse()
 	{
 		try
@@ -114,6 +123,9 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		$this->_redirect('checkout/cart');
 	}
 
+	/**
+	 * Process the response of a call to card (or elv) register
+	 */
 	protected function _processRegisterResponse()
 	{
 		try
@@ -156,6 +168,9 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		$this->_redirect('checkout/cart');
 	}
 
+	/**
+	 * Verify a saferpay response signature
+	 */
 	protected function _verifySignature()
 	{
 		$this->_getPayment()->verifySignature(
@@ -165,6 +180,11 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		return $this;
 	}
 
+	/**
+	 * Execute the payment
+	 *
+	 * @return null
+	 */
 	protected function _executePayment()
 	{
 		try
@@ -198,7 +218,8 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 	}
 
 	/**
-	 * 
+	 * Return an instance of the sayferpay payment method. In order to do so the
+	 * value saved on the customer session id checked.
 	 *
 	 * @return Saferpay_Business_Model_Abstract
 	 */
@@ -221,6 +242,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 	}
 
 	/**
+	 * Return the checkout session
 	 *
 	 * @return Mage_Checkout_Model_Session
 	 */

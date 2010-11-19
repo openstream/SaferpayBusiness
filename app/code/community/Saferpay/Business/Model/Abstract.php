@@ -23,6 +23,12 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 {
 	protected $_cardRefId;
 
+	/**
+	 * Add parameters for credit card payments to the register card call URL
+	 *
+	 * @param string $url
+	 * @return string
+	 */
 	protected function _appendRegisterCardRefUrlParams($url)
 	{
 		$params = array(
@@ -35,6 +41,11 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $url;
 	}
 
+	/**
+	 * Return the URL for registering a new card
+	 *
+	 * @return string
+	 */
 	protected function _getRegisterCardRefUrl()
 	{
 		$url = Mage::getStoreConfig('saferpay/settings/payinit_base_url');
@@ -45,6 +56,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	}
 
 	/**
+	 * Return the payment info model instance for the order
 	 *
 	 * @return Mage_Payment_Model_Info
 	 */
@@ -60,6 +72,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	}
 
 	/**
+	 * Return the order model
 	 *
 	 * @return Mage_Sales_Model_Order
 	 */
@@ -87,6 +100,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	}
 
 	/**
+	 * Return the checkout session instance
 	 *
 	 * @return Mage_Checkout_Model_Session
 	 */
@@ -95,6 +109,12 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return Mage::getSingleton('checkout/session');
 	}
 
+	/**
+	 * Return the attributes as an array that are part of the saferpay xml response
+	 *
+	 * @param string $xml
+	 * @return array
+	 */
 	protected function _parseResponseXml($xml)
 	{
 		$data = array();
@@ -107,6 +127,13 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $data;
 	}
 
+	/**
+	 * Append the array of parameters to the given URL string
+	 *
+	 * @param string $url
+	 * @param array $params
+	 * @return string
+	 */
 	protected function _appendQueryParams($url, array $params)
 	{
 		foreach ($params as $k => $v)
@@ -117,6 +144,11 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $url;
 	}
 
+	/**
+	 * Return the credit card reference id
+	 *
+	 * @return string
+	 */
 	public function getCardRefId()
 	{
 		if (is_null($this->_cardRefId))
@@ -126,11 +158,23 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $this->_cardRefId;
 	}
 
+	/**
+	 * Create a new credit card reference id
+	 *
+	 * @return string
+	 */
 	protected function _createCardRefId()
 	{
 		return md5(mt_rand(0, 1000) . microtime());
 	}
 
+	/**
+	 * Return the specified additional information from the payment info instance
+	 *
+	 * @param string $key
+	 * @param Varien_Object $payment
+	 * @return string
+	 */
 	public function getPaymentInfoData($key, $payment = null)
 	{
 		if (is_null($payment))
@@ -140,6 +184,14 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $payment->getAdditionalInformation($key);
 	}
 
+	/**
+	 * Add additional information to the payment info instance. If the instance
+	 * already is recorded in the databese, save the new settings.
+	 *
+	 * @param array $data
+	 * @param Varien_Object $payment
+	 * @return Saferpay_Business_Model_Abstract 
+	 */
 	public function addPaymentInfoData(array $data, $payment = null)
 	{
 		if (is_null($payment))
@@ -160,6 +212,14 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $this;
 	}
 
+	/**
+	 * Set the specified value on the payment info instance.
+	 *
+	 * @param string $key
+	 * @param mixed $value
+	 * @param Varien_Object $payment
+	 * @return Saferpay_Business_Model_Abstract
+	 */
 	public function setPaymentInfoData($key, $value = null, $payment = null)
 	{
 		if (is_null($payment))
@@ -170,7 +230,12 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $this;
 	}
 
-
+	/**
+	 * Validate the card registration response
+	 *
+	 * @param array $data
+	 * @return Saferpay_Business_Model_Abstract
+	 */
 	public function validateRegisterResponseData($data)
 	{
 		$result = isset($data['SCDRESULT']) ? $data['SCDRESULT'] : (isset($data['RESULT']) ? $data['RESULT'] : null);
@@ -202,6 +267,12 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $this;
 	}
 
+	/**
+	 * Throw an exception with a default error message if none is specified
+	 *
+	 * @param string $msg
+	 * @param array $params
+	 */
 	protected function _throwException($msg = null, $params = null)
 	{
 		if (is_null($msg))
@@ -211,6 +282,13 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		Mage::throwException(Mage::helper('saferpay_be')->__($msg, $params));
 	}
 
+	/**
+	 * Verify a signature from the saferpay gateway response
+	 *
+	 * @param string $data
+	 * @param string $sig
+	 * @return Saferpay_Business_Model_Abstract
+	 */
 	public function verifySignature($data, $sig)
 	{
 		$params = array(
@@ -229,6 +307,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	}
 
 	/**
+	 * Seperate the result status and the xml in the response
 	 *
 	 * @param string $response
 	 * @return array
@@ -248,6 +327,14 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return array($status, $xml);
 	}
 
+	/**
+	 * Build the query parameters for authorization requests and add them to the URL.
+	 *
+	 * @param string $url
+	 * @param Varien_Object $payment
+	 * @param string $amount
+	 * @return string
+	 */
 	protected function _appendAuthorizeUrlParams($url, Varien_Object $payment, $amount)
 	{
 		$params = array(
@@ -266,6 +353,13 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $this->_appendQueryParams($url, $params);
 	}
 
+	/**
+	 * Return the URL for an authorization request
+	 *
+	 * @param Varien_Object $payment
+	 * @param mixed $amount
+	 * @return string
+	 */
 	protected function _getAuthorizeUrl(Varien_Object $payment, $amount)
 	{
 		$url = Mage::getStoreConfig('saferpay/settings/execute_base_url');
@@ -273,6 +367,13 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $url;
 	}
 
+	/**
+	 * Authorize the payment of the specified amount
+	 *
+	 * @param Varien_Object $payment
+	 * @param mixed $amount
+	 * @return Saferpay_Business_Model_Abstract
+	 */
 	public function authorize(Varien_Object $payment, $amount)
 	{
 		$url = $this->_getAuthorizeUrl($payment, $amount);
@@ -324,11 +425,23 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $this;
 	}
 
+	/**
+	 * Return the transaction id for the current transaction
+	 *
+	 * @return string
+	 */
 	public function getTransactionId()
 	{
 		return $this->getPaymentInfoData('transaction_id');
 	}
 
+	/**
+	 * Validate an authorization request response
+	 *
+	 * @param string $status
+	 * @param array $data
+	 * @return Saferpay_Business_Model_Abstract
+	 */
 	protected function _validateAuthorizationResponse($status, $data)
 	{
 		try
@@ -376,6 +489,13 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $this;
 	}
 
+	/**
+	 * Return the URL for a capture request
+	 *
+	 * @param Varien_Object $payment
+	 * @param mixed $amount
+	 * @return string
+	 */
 	protected function _getCaptureUrl(Varien_Object $payment, $amount)
 	{
 		$params = array(
@@ -409,6 +529,13 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $this;
 	}
 
+	/**
+	 * Validate a capture request response
+	 *
+	 * @param string $status
+	 * @param array $data
+	 * @return Saferpay_Business_Model_Abstract
+	 */
 	protected function _validateCaptureResponse($status, $data)
 	{
 		if (
@@ -456,6 +583,12 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		return $this;
 	}
 
+	/**
+	 * Return the language for the order being processed. This is done by
+	 * looking at the local setting for the store the order was placed in.
+	 *
+	 * @return string
+	 */
 	protected function _getOrderLang()
 	{
 		$orderLocale = $locale = Mage::getStoreConfig('general/locale/code', $this->getOrder()->getStoreId());

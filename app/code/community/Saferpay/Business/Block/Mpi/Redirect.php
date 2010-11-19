@@ -2,6 +2,11 @@
 
 class Saferpay_Business_Block_Mpi_Redirect extends Mage_Core_Block_Template
 {
+	/**
+	 * Return an array with all required information for the credit card brand of the current transaction
+	 *
+	 * @return Varien_Object
+	 */
 	public function getCcInfo()
 	{
 		$info = array();
@@ -39,6 +44,11 @@ class Saferpay_Business_Block_Mpi_Redirect extends Mage_Core_Block_Template
 		return new Varien_Object($info);
 	}
 
+	/**
+	 * Check if the card for the current transaction supports 3D-secure
+	 *
+	 * @return bool
+	 */
 	public function is3dsCard()
 	{
 		if ($this->getMethod())
@@ -55,21 +65,41 @@ class Saferpay_Business_Block_Mpi_Redirect extends Mage_Core_Block_Template
 		return false;
 	}
 
+	/**
+	 * Return the title of the credit card brand used in the current transaction
+	 *
+	 * @return string
+	 */
 	public function getMethod3dsTitle()
 	{
 		return $this->getCcInfo()->getTitle();
 	}
 
+	/**
+	 * Return the type of the credit card brand used in the current transaction
+	 *
+	 * @return string
+	 */
 	public function getCcType()
 	{
 		return $this->getCcInfo()->getCode();
 	}
 
+	/**
+	 * Return the lable of the credit card brand used in the current transaction
+	 *
+	 * @return string
+	 */
 	public function getCcLable()
 	{
 		return $this->getCcInfo()->getLable();
 	}
 
+	/**
+	 * Return the payment method code used in the current transaction
+	 *
+	 * @return string
+	 */
 	public function getMethodCode()
 	{
 		if ($this->getMethod())

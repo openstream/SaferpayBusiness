@@ -21,6 +21,11 @@
 
 class Saferpay_Business_Model_System_Config_Source_Payment_Action
 {
+	/**
+	 * Return the options for the payment action configuration
+	 *
+	 * @return array
+	 */
 	public function toOptionArray()
 	{
 		return array(

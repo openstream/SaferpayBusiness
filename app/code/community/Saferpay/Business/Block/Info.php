@@ -21,6 +21,9 @@
 
 class Saferpay_Business_Block_Info extends Mage_Payment_Block_Info
 {
+	/**
+	 * Set the saferpay business payment info block template
+	 */
     protected function _construct()
     {
         parent::_construct();

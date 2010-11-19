@@ -30,6 +30,12 @@ class Saferpay_Business_Block_Form_Cc extends Mage_Payment_Block_Form_Cc
 		$this->setTemplate('saferpay/business/form/cc.phtml');
 	}
 
+	/**
+	 * Return an array with URL's to icons for all supported (and configured) credit card brands
+	 *
+	 * @param string $methodCode
+	 * @return array
+	 */
 	public function getPaymentImageSrcs($methodCode)
 	{
 		$images = array();

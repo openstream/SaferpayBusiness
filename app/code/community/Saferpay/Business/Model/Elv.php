@@ -50,6 +50,12 @@ class Saferpay_Business_Model_Elv extends Saferpay_Business_Model_Abstract
 		return $url;
 	}
 
+	/**
+	 * Save the elv registration response data on the payment info instance
+	 *
+	 * @param array $data
+	 * @return Saferpay_Business_Model_Elv
+	 */
 	public function importRegisterResponseData($data)
 	{
 		$data = $this->_parseResponseXml($data);
@@ -63,6 +69,11 @@ class Saferpay_Business_Model_Elv extends Saferpay_Business_Model_Abstract
 		return $this;
 	}
 
+	/**
+	 * Authorize the grand total of the order, then, if configured, capture the amount
+	 *
+	 * @return Saferpay_Business_Model_Elv 
+	 */
 	public function execute()
 	{
 		$this->getInfoInstance()->setStatus(self::STATUS_UNKNOWN);
@@ -82,6 +93,14 @@ class Saferpay_Business_Model_Elv extends Saferpay_Business_Model_Abstract
 		return $this;
 	}
 
+	/**
+	 * Append the authorization request query parameters to the specified URL
+	 *
+	 * @param string $url
+	 * @param Varien_Object $payment
+	 * @param mixed $amount
+	 * @return string
+	 */
 	protected function _appendAuthorizeUrlParams($url, Varien_Object $payment, $amount)
 	{
 		$params = array(
@@ -91,6 +110,12 @@ class Saferpay_Business_Model_Elv extends Saferpay_Business_Model_Abstract
 		return parent::_appendAuthorizeUrlParams($url, $payment, $amount);
 	}
 
+	/**
+	 * Save the passed data in the additional information attribute of the payment info instance
+	 *
+	 * @param Varien_Object $data
+	 * @return Saferpay_Business_Model_Elv 
+	 */
 	public function assignData($data)
 	{
 		parent::assignData($data);

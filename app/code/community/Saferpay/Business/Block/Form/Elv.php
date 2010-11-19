@@ -30,6 +30,14 @@ class Saferpay_Business_Block_Form_Elv extends Mage_Payment_Block_Form
 		$this->setTemplate('saferpay/business/form/elv.phtml');
 	}
 
+	/**
+	 * I don't think this is needed for the ELV payment type because only one icon is used
+	 *
+	 * @deprecated since 1.0.0
+	 * @see getPaymentImageSrc()
+	 * @param string $methodCode
+	 * @return array
+	 */
 	public function getPaymentImageSrcs($methodCode)
 	{
 		$images = array();
@@ -46,21 +54,15 @@ class Saferpay_Business_Block_Form_Elv extends Mage_Payment_Block_Form
 					break;
 				}
 			}
-			/*
-
-			foreach (array('-3ds.png', '-3ds.gif', '-3ds.jpg') as $filetype)
-			{
-				if (file_exists($imageFilename . $filetype))
-				{
-					$images[] = $this->getSkinUrl('saferpay/business/images/' . $methodCode . '/' . $typeCode . $filetype);
-					break;
-				}
-			}
-			 */
 		}
 		return $images;
 	}
 
+	/**
+	 * Return the ELV image logo URL
+	 *
+	 * @return string
+	 */
 	public function getPaymentImageSrc()
 	{
 		return $this->getSkinUrl('saferpay/business/images/saferpaybe_elv.gif');
