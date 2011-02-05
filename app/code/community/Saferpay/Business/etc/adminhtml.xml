@@ -29,7 +29,7 @@
 						<children>
 							<config>
 								<children>
-									<saferpay translate="title" module="saferpay">
+									<saferpay translate="title" module="saferpay_be">
 										<title>Saferpay</title>
 									</saferpay>
 								</children>
