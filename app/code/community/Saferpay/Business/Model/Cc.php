@@ -229,9 +229,9 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
 			'MPI_SESSIONID' => $this->getPaymentInfoData('mpi_session_id'),
 			'LANGID' => $this->_getMpiLangId(),
-			'SUCCESSLINK' => Mage::getUrl('saferpaybe/process/mpiSuccess', array('_nosid' => 1)),
-			'FAILLINK' => Mage::getUrl('saferpaybe/process/mpiFail', array('_nosid' => 1)),
-			'BACKLINK' => Mage::getUrl('saferpaybe/process/mpiBack', array('_nosid' => 1)),
+			'SUCCESSLINK' => Mage::getUrl('saferpaybe/process/mpiSuccess', array('_nosid' => 1, '_secure' => true)),
+			'FAILLINK' => Mage::getUrl('saferpaybe/process/mpiFail', array('_nosid' => 1, '_secure' => true)),
+			'BACKLINK' => Mage::getUrl('saferpaybe/process/mpiBack', array('_nosid' => 1, '_secure' => true)),
 			'DESCRIPTION' => htmlentities('Magento ' . Mage::getVersion(), ENT_COMPAT, 'UTF-8'),
 		);
 

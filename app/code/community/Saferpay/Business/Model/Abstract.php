@@ -33,8 +33,8 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	{
 		$params = array(
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
-			'SUCCESSLINK' => Mage::getUrl('saferpaybe/process/registerSuccess', array('_nosid' => 1)),
-			'FAILLINK' => Mage::getUrl('saferpaybe/process/registerFail', array('_nosid' => 1)),
+			'SUCCESSLINK' => Mage::getUrl('saferpaybe/process/registerSuccess', array('_nosid' => 1, '_secure' => true)),
+			'FAILLINK' => Mage::getUrl('saferpaybe/process/registerFail', array('_nosid' => 1, '_secure' => true)),
 			'CARDREFID' => $this->getCardRefId(),
 		);
 		$url = $this->_appendQueryParams($url, $params);

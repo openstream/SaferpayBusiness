@@ -139,7 +139,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 				$flags = $method->get3DSecureFlags();
 				if ($flags->getEci() === Saferpay_Business_Model_Cc::ECI_ENROLLED)
 				{
-					$this->_redirect('*/*/mpiRedirect');
+					$this->_redirect('*/*/mpiRedirect', array('_secure' => true));
 					
 					return;
 				}
@@ -190,7 +190,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		try
 		{
 			$this->_getPayment()->execute();
-			$this->_redirect('checkout/onepage/success');
+			$this->_redirect('checkout/onepage/success', array('_secure' => true));
 			return;
 		}
 		catch (Mage_Core_Exception $e)
