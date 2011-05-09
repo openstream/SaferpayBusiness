@@ -24,7 +24,8 @@ if(typeof Saferpay == 'undefined') {
 
 Saferpay.Business = Class.create({
 	initialize: function() {
-		payment.save = payment.save.wrap(function (origMethod) {
+		var obj1 = typeof payment == 'undefined' ? Payment.prototype : payment;
+		obj1.save = obj1.save.wrap(function (origMethod) {
 			if (checkout.loadWaiting != false) return;
 			var validator = new Validation(this.form);
 			if (this.validate() && validator.validate()) {
@@ -50,14 +51,24 @@ Saferpay.Business = Class.create({
 				origMethod();
 				if (this.currentMethod && this.currentMethod.substr(0, 11) == 'saferpaybe_') {
 					saferpay.disableFields(false);
-
-					review.save = review.save.wrap(function (origMethod) {
+					var obj2 = typeof review == 'undefined' ? Review.prototype : review;
+					//console.debug('using ' + (typeof review == 'undefined' ? 'Review.prototype' : 'review'));
+					obj2.save = obj2.save.wrap(function (origMethod) {
 						saferpay.disableFields();
 						origMethod();
 						saferpay.disableFields(false);
 					});
-					review.onSave = saferpay.processReviewResponse;
-					review.onComplete = saferpay.updateLoadWaiting;
+					if (typeof review == 'undefined'){
+						// Magento 1.5
+						//console.debug('Wrapping Review.prototype.nextStep()');
+						Review.prototype.nextStep = Review.prototype.nextStep.wrap(saferpay.processReviewResponse);
+						Review.prototype.resetLoadWaiting = Review.prototype.resetLoadWaiting.wrap(saferpay.resetLoadWaiting);
+					} else {
+						// Magento 1.4
+						//console.debug('Setting review.onSave');
+						review.onSave = saferpay.updateReviewResponse;
+						review.onComplete = saferpay.updateLoadWaiting;
+					}
 				}
 			}
 		});
@@ -68,12 +79,21 @@ Saferpay.Business = Class.create({
 		var elements = form.getElementsByClassName('no-submit');
 		for (var i=0; i<elements.length; i++) elements[i].disabled = mode;
 	},
+	/*
+	 * Wrapper for Magento 1.4
+	 * Mageto 1.5 calls resetLoadWaiting directly
+	 */
 	updateLoadWaiting: function(request)
 	{
+		//console.debug('updateLoadWaiting');
 		var transport;
 		if (request.transport) transport = request.transport;
 		else transport = false;
-		
+		saferpay.resetLoadWaiting(transport);
+	},
+	resetLoadWaiting: function(transport)
+	{
+		//console.debug('resetLoadWaiting');
 		if (transport && transport.responseText) {
 			try {
 				var response = eval('(' + transport.responseText + ')');
@@ -91,12 +111,20 @@ Saferpay.Business = Class.create({
 		 */
 		checkout.setLoadWaiting(false);
 	},
-	processReviewResponse: function(request)
+	/*
+	 * Wrapper for Magento 1.4
+	 * Magento 1.5 calls processReviewResponse() directly
+	 */
+	updateReviewResponse: function(request)
 	{
+		//console.debug('updateReviewResponse');
 		var transport;
-		
-		if (request.transport) transport = request.transport;
+	    if (request.transport) transport = request.transport;
 		else transport = false;
+		saferpay.processReviewResponse(review.nextStep, transport);
+	},
+	processReviewResponse: function(origMethod, transport) {
+		//console.debug('processReviewResponse');
 		if (payment.currentMethod && payment.currentMethod.substr(0, 11) == 'saferpaybe_') {
 			if (transport && transport.responseText) {
 				try {
@@ -126,7 +154,7 @@ Saferpay.Business = Class.create({
 				catch (e) {}
 			}
 		}
-		review.nextStep(transport);
+		origMethod(transport);
 	}
 });
 
