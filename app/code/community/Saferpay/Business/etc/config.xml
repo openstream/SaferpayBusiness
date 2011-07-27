@@ -98,6 +98,17 @@
 				</types>
 			</cc>
 		</saferpay_be>
+		<events>
+			<http_response_send_before>
+				<observers>
+					<saferpay_business_observer>
+						<type>singleton</type>
+						<class>Saferpay_Business_Model_Observer</class>
+						<method>applyTag</method>
+					</saferpay_business_observer>
+				</observers>
+			</http_response_send_before>
+		</events>			
 	</global>
 	<frontend>
 		<routers>
