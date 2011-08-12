@@ -108,7 +108,25 @@
 					</saferpay_business_observer>
 				</observers>
 			</http_response_send_before>
-		</events>			
+		</events>
+		<sales>
+			<order>
+				<statuses>
+					<canceled_saferpay translate="label">
+						<label>Canceled by Saferpay</label>
+					</canceled_saferpay>
+				</statuses>
+				<states>
+					<canceled_saferpay translate="label">
+						<label>Canceled by Saferpay</label>
+						<statuses>
+							<canceled_saferpay default="1"/>
+						</statuses>
+						<!-- <visible_on_front/> -->
+				   </canceled_saferpay>
+				</states>
+			</order>
+		</sales>			
 	</global>
 	<frontend>
 		<routers>
