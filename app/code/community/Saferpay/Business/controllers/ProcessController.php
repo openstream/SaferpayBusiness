@@ -25,25 +25,21 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 
 	public function registerSuccessAction()
 	{
-		Mage::log(__METHOD__);
 		$this->_processRegisterResponse();
 	}
 
 	public function registerFailAction()
 	{
-		Mage::log(__METHOD__);
 		$this->_processRegisterResponse();
 	}
 
 	public function mpiSuccessAction()
 	{
-		Mage::log(__METHOD__);
 		$this->_processMpiResponse();
 	}
 
 	public function mpiFailAction()
 	{
-		Mage::log(__METHOD__);
 		$this->_processMpiResponse();
 	}
 
@@ -52,7 +48,6 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 	 */
 	public function mpiBackAction()
 	{
-		Mage::log(__METHOD__);
 		try
 		{
 			$this->_getPayment()->mpiAuthenticationCancelled();
@@ -195,7 +190,6 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		try
 		{
 			$this->_getPayment()->execute();
-			Mage::log('execute ok');
 			$this->_redirect('checkout/onepage/success', array('_secure' => true));
 			return;
 		}

@@ -55,7 +55,6 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	{
 		$url = Mage::getStoreConfig('saferpay/settings/payinit_base_url');
 		$url = $this->_appendRegisterCardRefUrlParams($url);
-		Mage::log('PayInit URL is called: '.$url);
 		$registerCardRefUrl = trim($this->_readUrl($url));
 
 		return $registerCardRefUrl;
@@ -382,9 +381,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	 */
 	public function authorize(Varien_Object $payment, $amount)
 	{
-		Mage::log(__METHOD__);
 		$url = $this->_getAuthorizeUrl($payment, $amount);
-		Mage::log('Authorize url: ' . $url);
 		$response = trim($this->_readUrl($url));
 		list($status, $xml) = $this->_splitResponseData($response);
 		if ($status != 'OK')
@@ -528,7 +525,6 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	 */
 	public function capture(Varien_Object $payment, $amount)
 	{
-		Mage::log(__METHOD__);
 		$url = $this->_getCaptureUrl($payment, $amount);
 		$response = trim($this->_readUrl($url));
 		list($status, $xml) = $this->_splitResponseData($response);
