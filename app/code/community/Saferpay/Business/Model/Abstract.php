@@ -27,6 +27,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
      * Order states
      */
     const STATE_CANCELED_SAFERPAY = 'canceled_saferpay';
+    const STATE_AUTHORIZED = 'authorized';
 
 	/**
 	 * Add parameters for credit card payments to the register card call URL
@@ -421,6 +422,9 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 			->setIsTransactionClosed(0);
 
 		$amount = Mage::helper('core')->formatPrice(Mage::helper('saferpay_be')->round($amount, 2), false);
+		if($this->getConfigPaymentAction() != self::ACTION_AUTHORIZE_CAPTURE){
+			$this->getOrder()->setState(self::STATE_AUTHORIZED, self::STATE_AUTHORIZED);
+		}
 		$this->getOrder()->addStatusHistoryComment(
 				Mage::helper('saferpay_be')->__('Authorization for %s successfull (AUTHCODE %s, ID %s)', $amount, $authcode, $data['ID'])
 			)->save(); // save history model

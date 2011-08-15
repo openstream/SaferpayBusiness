@@ -115,6 +115,9 @@
 					<canceled_saferpay translate="label">
 						<label>Canceled by Saferpay</label>
 					</canceled_saferpay>
+					<authorized translate="label">
+						<label>Authorized Payment</label>
+					</authorized>
 				</statuses>
 				<states>
 					<canceled_saferpay translate="label">
@@ -123,7 +126,14 @@
 							<canceled_saferpay default="1"/>
 						</statuses>
 						<!-- <visible_on_front/> -->
-				   </canceled_saferpay>
+				   </canceled_saferpay>				
+					<authorized translate="label">
+						<label>Authorized Payment</label>
+						<statuses>
+							<authorized default="1"/>
+						</statuses>
+						<!-- <visible_on_front/> -->
+				   </authorized>
 				</states>
 			</order>
 		</sales>			
