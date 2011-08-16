@@ -197,10 +197,7 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		{
 			Mage::logException($e);
 			Mage::helper('checkout')->sendPaymentFailedEmail($this->_getSession()->getQuote(), $e->getMessage());
-			$this->_getSession()->addError($e->getMessage());
-			$this->_getPayment()->getOrder()->cancel()
-				  							->setState(Saferpay_Business_Model_Abstract::STATE_CANCELED_SAFERPAY, Saferpay_Business_Model_Abstract::STATE_CANCELED_SAFERPAY)
-				  							->save();
+			$this->_getSession()->addError(Mage::helper('saferpay_be')->__('An error occured while processing the payment, please contact the store owner for assistance.'));
 		}
 		catch (Exception $e)
 		{

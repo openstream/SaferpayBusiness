@@ -467,9 +467,9 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 			}
 			if ($data['RESULT'] !== '0')
 			{
-				if (isset($data['AUTHMESSAGE']) && $data['AUTHMESSAGE'])
+				if (isset($data['AUTHRESULT']) && $data['AUTHRESULT'])
 				{
-					$msg = Mage::helper('saferpay_be')->__($data['AUTHMESSAGE']);
+					$msg = $data['AUTHRESULT'];
 				}
 				else
 				{
@@ -492,7 +492,10 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 			/*
 			 * Add error message to order comment history
 			 */
-			$this->getOrder()->addStatusHistoryComment($e->getMessage())->save();
+			$msg = (int)$e->getMessage() ? Mage::helper('saferpay_be')->__(Mage::helper('saferpay_be')->error_code[$e->getMessage()]) : $e->getMessage();
+			$this->getOrder()->cancel()
+				  			 ->setState(self::STATE_CANCELED_SAFERPAY, self::STATE_CANCELED_SAFERPAY, $msg)
+				  			 ->save();
 			throw $e;
 		}
 		return $this;
