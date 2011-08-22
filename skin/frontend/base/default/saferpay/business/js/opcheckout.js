@@ -25,53 +25,83 @@ if(typeof Saferpay == 'undefined') {
 Saferpay.Business = Class.create({
 	initialize: function() {
 		var obj1 = typeof payment == 'undefined' ? Payment.prototype : payment;
-		obj1.save = obj1.save.wrap(function (origMethod) {
-			if (checkout.loadWaiting != false) return;
-			var validator = new Validation(this.form);
-			if (this.validate() && validator.validate()) {
+		if(typeof obj1.save != 'undefined'){
+			obj1.save = obj1.save.wrap(function (origMethod) {
+				if (checkout.loadWaiting != false) return;
+				var validator = new Validation(this.form);
+				if (this.validate() && validator.validate()) {
+					saferpay.ccnum = '';
+					saferpay.cccvc = '';
+					saferpay.ccexpmonth = '';
+					saferpay.ccexpyear = '';
+					saferpay.elvacc = '';
+					saferpay.elvbank = '';
+					if (this.currentMethod && this.currentMethod.substr(0, 11) == 'saferpaybe_') {
+						if (this.currentMethod == 'saferpaybe_cc') {
+							saferpay.ccnum = $('saferpaybe_cc_cc_number').value;
+							saferpay.cccvc = $('saferpaybe_cc_cc_cid').value;
+							saferpay.ccexpmonth = $('saferpaybe_cc_expiration').value;
+							saferpay.ccexpyear = $('saferpaybe_cc_expiration_yr').value;
+						}
+						else if (this.currentMethod == 'saferpaybe_elv') {
+							saferpay.elvacc = $('saferpaybe_elv_account_number').value;
+							saferpay.elvbank = $('saferpaybe_elv_bank_code').value;
+						}
+						saferpay.disableFields();
+					}
+					origMethod();
+					if (this.currentMethod && this.currentMethod.substr(0, 11) == 'saferpaybe_') {
+						saferpay.disableFields(false);
+						var obj2 = typeof review == 'undefined' ? Review.prototype : review;
+						//console.debug('using ' + (typeof review == 'undefined' ? 'Review.prototype' : 'review'));
+						obj2.save = obj2.save.wrap(function (origMethod) {
+							saferpay.disableFields();
+							origMethod();
+							saferpay.disableFields(false);
+						});
+						if (typeof review == 'undefined'){
+							// Magento 1.5
+							//console.debug('Wrapping Review.prototype.nextStep()');
+							Review.prototype.nextStep = Review.prototype.nextStep.wrap(saferpay.processReviewResponse);
+							Review.prototype.resetLoadWaiting = Review.prototype.resetLoadWaiting.wrap(saferpay.resetLoadWaiting);
+						} else {
+							// Magento 1.4
+							//console.debug('Setting review.onSave');
+							review.onSave = saferpay.updateReviewResponse;
+							review.onComplete = saferpay.updateLoadWaiting;
+						}
+					}
+				}
+			});
+		}else{
+			checkout.submitComplete = function(request){				
+				
 				saferpay.ccnum = '';
 				saferpay.cccvc = '';
 				saferpay.ccexpmonth = '';
 				saferpay.ccexpyear = '';
 				saferpay.elvacc = '';
 				saferpay.elvbank = '';
-				if (this.currentMethod && this.currentMethod.substr(0, 11) == 'saferpaybe_') {
-					if (this.currentMethod == 'saferpaybe_cc') {
+				if (payment.currentMethod && payment.currentMethod.substr(0, 11) == 'saferpaybe_') {
+					if (payment.currentMethod == 'saferpaybe_cc') {
 						saferpay.ccnum = $('saferpaybe_cc_cc_number').value;
 						saferpay.cccvc = $('saferpaybe_cc_cc_cid').value;
 						saferpay.ccexpmonth = $('saferpaybe_cc_expiration').value;
 						saferpay.ccexpyear = $('saferpaybe_cc_expiration_yr').value;
 					}
-					else if (this.currentMethod == 'saferpaybe_elv') {
+					else if (payment.currentMethod == 'saferpaybe_elv') {
 						saferpay.elvacc = $('saferpaybe_elv_account_number').value;
 						saferpay.elvbank = $('saferpaybe_elv_bank_code').value;
 					}
 					saferpay.disableFields();
 				}
-				origMethod();
-				if (this.currentMethod && this.currentMethod.substr(0, 11) == 'saferpaybe_') {
-					saferpay.disableFields(false);
-					var obj2 = typeof review == 'undefined' ? Review.prototype : review;
-					//console.debug('using ' + (typeof review == 'undefined' ? 'Review.prototype' : 'review'));
-					obj2.save = obj2.save.wrap(function (origMethod) {
-						saferpay.disableFields();
-						origMethod();
-						saferpay.disableFields(false);
-					});
-					if (typeof review == 'undefined'){
-						// Magento 1.5
-						//console.debug('Wrapping Review.prototype.nextStep()');
-						Review.prototype.nextStep = Review.prototype.nextStep.wrap(saferpay.processReviewResponse);
-						Review.prototype.resetLoadWaiting = Review.prototype.resetLoadWaiting.wrap(saferpay.resetLoadWaiting);
-					} else {
-						// Magento 1.4
-						//console.debug('Setting review.onSave');
-						review.onSave = saferpay.updateReviewResponse;
-						review.onComplete = saferpay.updateLoadWaiting;
-					}
-				}
+				
+				var transport;
+				if (request.transport) transport = request.transport;
+				else transport = false;
+				saferpay.processReviewResponse(review.nextStep, transport);
 			}
-		});
+		}
 	},
 	disableFields: function(mode) {
 		if (typeof mode == 'undefined') mode = true;
