@@ -121,7 +121,9 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			'card_ref_id' => $data['CARDREFID'],
 			'card_mask' => $data['CARDMASK'],
 			'card_type' => $data['CARDTYPE'],
-			'card_brand' => $data['CARDBRAND']
+			'card_brand' => $data['CARDBRAND'],
+			'expiry_month' => $data['EXPIRYMONTH'],
+			'expiry_year' => $data['EXPIRYYEAR']
 		));
 		$this->getInfoInstance()->setCcLast4(substr($data['CARDMASK'], -4));
 
@@ -198,15 +200,11 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	 */
 	protected function _getVerify3DSecureUrl()
 	{
-		$expiry = sprintf('%02d%02d',
-			$this->getInfoInstance()->getCcExpMonth(),
-			substr($this->getInfoInstance()->getCcExpYear(), 2)
-		);
 		$params = array(
 			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
 			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
 			'CARDREFID' => $this->getPaymentInfoData('card_ref_id'),
-			'EXP' => $expiry,
+			'EXP' => $this->getPaymentInfoData('expiry_month').$this->getPaymentInfoData('expiry_year'),
 			'AMOUNT' => intval(Mage::helper('saferpay_be')->round($this->getOrder()->getGrandTotal(), 2) * 100),
 			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
 		);
@@ -484,7 +482,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	{
 		$eci = $this->getPaymentInfoData('eci', $payment);
 		$params = array(
-			'EXP'  => $this->_get4DigitExpiry(),
+			'EXP'  => $this->getPaymentInfoData('expiry_month').$this->getPaymentInfoData('expiry_year'),
 			'CVC'  => $this->getCvc(),
 			'NAME' => htmlentities($payment->getCcOwner(), ENT_COMPAT, 'UTF-8'),
 			'ECI'  => $eci,
@@ -502,19 +500,5 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		}
 		$url = $this->_appendQueryParams($url, $params);
 		return parent::_appendAuthorizeUrlParams($url, $payment, $amount);
-	}
-
-	/**
-	 * Return the credit card expiry date as a 4 digit string MMYY
-	 *
-	 * @return string
-	 */
-	protected function _get4DigitExpiry()
-	{
-		$expiry = sprintf('%02d%02d',
-			$this->getInfoInstance()->getCcExpMonth(),
-			substr($this->getInfoInstance()->getCcExpYear(), 2)
-		);
-		return $expiry;
 	}
 }
