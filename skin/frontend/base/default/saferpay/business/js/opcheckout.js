@@ -74,8 +74,7 @@ Saferpay.Business = Class.create({
 				}
 			});
 		}else{
-			checkout.submitComplete = function(request){				
-				
+			checkout.submitComplete = checkout.submitComplete.wrap(function(origMethod, request){				
 				saferpay.ccnum = '';
 				saferpay.cccvc = '';
 				saferpay.ccexpmonth = '';
@@ -94,13 +93,14 @@ Saferpay.Business = Class.create({
 						saferpay.elvbank = $('saferpaybe_elv_bank_code').value;
 					}
 					saferpay.disableFields();
+					var transport;
+					if (request.transport) transport = request.transport;
+					else transport = false;
+					saferpay.processReviewResponse(review.nextStep, transport);
+				}else{
+					origMethod(request);
 				}
-				
-				var transport;
-				if (request.transport) transport = request.transport;
-				else transport = false;
-				saferpay.processReviewResponse(review.nextStep, transport);
-			}
+			});
 		}
 	},
 	disableFields: function(mode) {
@@ -201,4 +201,10 @@ Validation.creditCartTypes = Validation.creditCartTypes.merge({
 
 Event.observe(window, 'load', function() {
 	saferpay = new Saferpay.Business();
+/*	
+	payment.save.wrap(function (origMethod){
+	 alert(1);
+	 origMethod();
+	});
+*/	
 });
