@@ -267,7 +267,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 			{
 				$msg = null;
 			}
-			$this->_throwException($msg);
+			throw new Exception($msg);
 		}
 
 		return $this;
