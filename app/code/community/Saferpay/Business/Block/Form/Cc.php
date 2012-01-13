@@ -95,4 +95,44 @@ class Saferpay_Business_Block_Form_Cc extends Mage_Payment_Block_Form_Cc
 		}
 		return $types;
 	}
+
+    /**
+     * Retrieve saved credit card ref ids.
+     *
+     * @return array
+     */
+    public function getSavedCards()
+    {
+        if ($this->getMethod()->getConfigData('saved_cards') && Mage::getSingleton('customer/session')->isLoggedIn()) {
+
+            $collection = Mage::getModel('sales/order_payment')->getCollection();
+            $collection->join('order', 'main_table.parent_id = order.entity_id', array());
+            $collection->addFieldToFilter('order.customer_id', Mage::getSingleton('customer/session')->getCustomer()->getId());
+            $collection->setOrder('order.created_at', Varien_Data_Collection_Db::SORT_ORDER_ASC);
+
+            $cards = array();
+            foreach ($collection as $payment) {
+
+                $info = $payment->getAdditionalInformation();
+                $cardRefId = isset($info['card_ref_id']) ? $info['card_ref_id'] : false;
+
+                if ($cardRefId) {
+
+                    $card = $info['card_brand'] . ' ' . $info['card_mask'] . '(' . $info['expiry_month'] . '/' . $info['expiry_year'] . ')';
+                    $cards[$card] = json_encode(array(
+            			'card_ref_id' => $info['card_ref_id'],
+            			'card_mask' => $info['card_mask'],
+            			'card_type' => $info['card_type'],
+            			'card_brand' => $info['card_brand'],
+            			'expiry_month' => $info['expiry_month'],
+            			'expiry_year' => $info['expiry_year']
+                    ));
+                }
+            }
+
+            return $cards;
+        }
+
+        return array();
+    }
 }

@@ -462,7 +462,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 				$data['MSGTYPE'] != 'AuthorizationResponse'
 			)
 			{
-				$msg = Mage::helper('saferpay_be')->__('Error parsing response: %s', $response);
+				$msg = Mage::helper('saferpay_be')->__('Error parsing response: %s', print_r($data, true));
 				Mage::throwException($msg);
 			}
 			if ($data['RESULT'] !== '0')
@@ -473,7 +473,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 				}
 				else
 				{
-					$msg = Mage::helper('saferpay_be')->__('Error authorizing payment: %s', $response);
+					$msg = Mage::helper('saferpay_be')->__('Error authorizing payment: %s', print_r($data, true));
 				}
 				Mage::log(array('Authorization response error data' => $data));
 				Mage::throwException($msg);
