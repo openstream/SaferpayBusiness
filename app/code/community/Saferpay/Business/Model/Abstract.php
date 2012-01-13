@@ -591,6 +591,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		}
 		$invoice = $this->getOrder()->prepareInvoice();
 		$invoice->register()->capture();
+		$invoice->setTransactionId($this->getTransactionId());
 		$this->getOrder()->addRelatedObject($invoice);
 		return $this;
 	}
