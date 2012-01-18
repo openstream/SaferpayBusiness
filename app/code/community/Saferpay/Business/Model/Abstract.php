@@ -418,6 +418,8 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 				'auth_code' => $authcode,
 			), $payment);
 
+		$payment->setTransactionId($data['ID']);
+		$payment->addTransaction(Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE);
 		$payment->setStatus(self::STATUS_APPROVED)
 			->setIsTransactionClosed(0);
 
