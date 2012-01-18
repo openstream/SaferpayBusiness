@@ -118,7 +118,7 @@ class Saferpay_Business_Block_Form_Cc extends Mage_Payment_Block_Form_Cc
 
                 if ($cardRefId) {
 
-                    $card = $info['card_brand'] . ' ' . $info['card_mask'] . '(' . $info['expiry_month'] . '/' . $info['expiry_year'] . ')';
+                    $card = $info['card_brand'] . ' ' . $info['card_mask'] . ' (' . $info['expiry_month'] . '/' . $info['expiry_year'] . ')';
                     $cards[$card] = json_encode(array(
             			'card_ref_id' => $info['card_ref_id'],
             			'card_mask' => $info['card_mask'],
