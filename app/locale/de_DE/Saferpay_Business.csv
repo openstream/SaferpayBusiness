@@ -29,6 +29,7 @@
 "The credit card is not enrolled in the 3D-Secure program. Please contact the institution issuing your card for further information.","Die Kreditkarte nimmt nicht am 3D-Secure Verfahren Teil. Bitte kontaktieren Sie den Herausgeber der Karte für weitere Informationen."
 "Order processing halted because 3D-Secure liability shift is not available.","Die Verarbeitung der Bestellung wurde unterbrochen da keine 3D-Secure Haftungsumkehr besteht."
 "Authorization for %s successfull (AUTHCODE %s, ID %s)","Autorisierung der Zahlung von %s erfolgreich (AUTHCODE %s, ID %s)"
+"Refund for %s successfull (ID %s)","Gutschrift von %s erfolgreich (ID %s)"
 "Error authorizing payment: %s","Fehler bei der Autorisierung der Zahlung: %s"
 "Error: authorization requested for order ""%s"", recieved authorization for order id ""%s""","Fehler: Autorisierungs-Anfrage für Bestellung ""%s"", Antwort für Bestellung ""%s"""
 "Error processing payment: %s","Fehler beim Verarbeiten der Zahlung: %s"
