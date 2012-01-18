@@ -196,7 +196,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	 *
 	 * @param array $data
 	 * @param Varien_Object $payment
-	 * @return Saferpay_Business_Model_Abstract 
+	 * @return Saferpay_Business_Model_Abstract
 	 */
 	public function addPaymentInfoData(array $data, $payment = null)
 	{
@@ -418,7 +418,9 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 				'auth_code' => $authcode,
 			), $payment);
 
+		$payment->setTransactionAdditionalInfo(Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS, $data);
 		$payment->setStatus(self::STATUS_APPROVED)
+			->setTransactionId($data['ID'])
 			->setIsTransactionClosed(0);
 
 		$amount = Mage::helper('core')->formatPrice(Mage::helper('saferpay_be')->round($amount, 2), false);
