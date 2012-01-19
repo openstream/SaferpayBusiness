@@ -24,6 +24,11 @@ if(typeof Saferpay == 'undefined') {
 
 Saferpay.Business = Class.create({
 	initialize: function() {
+		var savedCard = $('saferpaybe_cc_saved_card');
+		if (savedCard) {
+			this.switchSavedCards();
+			Event.observe(savedCard, 'change', this.switchSavedCards);
+		}
 		var obj1 = typeof payment == 'undefined' ? Payment.prototype : payment;
 		if(typeof obj1.save != 'undefined'){
 			obj1.save = obj1.save.wrap(function (origMethod) {
@@ -101,6 +106,13 @@ Saferpay.Business = Class.create({
 					origMethod(request);
 				}
 			});
+		}
+	},
+	switchSavedCards: function() {
+		if ($('saferpaybe_cc_saved_card').value == '') {
+			$$('#container_payment_method_saferpaybe_cc li').each(Element.show);
+		} else {
+			$$('#container_payment_method_saferpaybe_cc li:not(.saferpay_be_saved_cards)').each(Element.hide);
 		}
 	},
 	disableFields: function(mode) {

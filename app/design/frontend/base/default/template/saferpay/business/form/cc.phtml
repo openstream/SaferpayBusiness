@@ -24,6 +24,20 @@ $_code = $this->getMethodCode();
 $_imgs  = $this->getPaymentImageSrcs($_code);
 ?>
 <ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none">
+    <?php $cards = $this->getSavedCards(); ?>
+    <?php if (count($cards) > 0): ?>
+    <li class="saferpay_be_saved_cards">
+        <label for="<?php echo $_code ?>_saved_card"><?php echo $this->__('Saved Credit Cards') ?></label>
+        <div class="input-box">
+            <select id="<?php echo $_code ?>_saved_card" name="payment[saved_card]" title="<?php echo $this->__('Saved Credit Cards') ?>">
+            <?php foreach ($cards as $_card => $_info): ?>
+                <option value="<?php echo $this->htmlEscape($_info) ?>"><?php echo $_card ?></option>
+            <?php endforeach ?>
+                <option value=""><?php echo $this->__('--New Credit Card--') ?></option>
+            </select>
+        </div>
+    </li>
+    <?php endif; ?>
     <li>
         <label for="<?php echo $_code ?>_cc_owner" class="required"><em>*</em><?php echo $this->__('Name on Card') ?></label>
         <div class="input-box">
@@ -71,7 +85,7 @@ $_imgs  = $this->getPaymentImageSrcs($_code);
     </li>
     <?php echo $this->getChildHtml() ?>
     <?php if($this->hasVerification()): ?>
-    <li>
+    <li class="saferpay_be_saved_cards">
         <label for="<?php echo $_code ?>_cc_cid" class="required"><em>*</em><?php echo $this->__('Card Verification Number') ?></label>
         <div class="input-box">
             <div class="v-fix">
@@ -83,7 +97,7 @@ $_imgs  = $this->getPaymentImageSrcs($_code);
     <?php endif; ?>
 
     <?php if ($_imgs): ?>
-    <li>
+    <li class="saferpay_be_saved_cards">
         <div style="padding:10px 15px 15px;">
 	    <?php foreach ($_imgs as $_img): ?>
             <img src="<?php echo $_img ?>" class="cc-logo" alt="" />
