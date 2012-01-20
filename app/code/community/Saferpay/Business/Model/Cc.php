@@ -70,11 +70,11 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	 */
 	public function getOrderPlaceRedirectUrl()
 	{
-	    if ($this->getInfoInstance()->getSavedCard()) {
-	        $url = Mage::getUrl('saferpaybe/process/savedCard', array('_secure' => true));
-	    } else {
-		    $url = $this->_getRegisterCardRefUrl();
-	    }
+		if ($this->getInfoInstance()->getSavedCard()) {
+			$url = Mage::getUrl('saferpaybe/process/savedCard', array('_secure' => true));
+		} else {
+			$url = $this->_getRegisterCardRefUrl();
+		}
 		return $url;
 	}
 
@@ -110,21 +110,23 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return $this->getSession()->getSpCvc();
 	}
 
-    public function assignData($data) {
-        if (!($data instanceof Varien_Object)) {
-            $data = new Varien_Object($data);
-        }
-        parent::assignData($data);
+	public function assignData($data) {
+		if (!($data instanceof Varien_Object)) {
+			$data = new Varien_Object($data);
+		}
+		parent::assignData($data);
 
-        $savedCard = $data->getSavedCard();
-        if ($savedCard = json_decode($savedCard, true)) {
-            foreach ($savedCard as $key => $value) {
-                $this->getInfoInstance()->setAdditionalInformation($key, $value);
-            }
-        }
+		$this->setCvc($data->getCcCid());
 
-        return $this;
-    }
+		$savedCard = $data->getSavedCard();
+		if ($savedCard = json_decode($savedCard, true)) {
+			foreach ($savedCard as $key => $value) {
+				$this->getInfoInstance()->setAdditionalInformation($key, $value);
+			}
+		}
+
+		return $this;
+	}
 
 	/**
 	 * Save the credit card registration response data on the payment info instance

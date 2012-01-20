@@ -43,9 +43,6 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		$this->_processMpiResponse();
 	}
 
-	/**
-	 * Process the response of a call to card (or elv) register
-	 */
 	public function savedCardAction()
 	{
 		try
@@ -53,7 +50,6 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 			$method = $this->_getPayment();
 			if ($method->getCode() == 'saferpaybe_cc')
 			{
-				$method->setCvc($this->getRequest()->getParam($method->getCvcParamName(), ''));
 				$flags = $method->get3DSecureFlags();
 				if ($flags->getEci() === Saferpay_Business_Model_Cc::ECI_ENROLLED)
 				{
