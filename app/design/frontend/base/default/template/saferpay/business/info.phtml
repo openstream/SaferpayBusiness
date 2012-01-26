@@ -20,6 +20,7 @@
  */
 ?>
 <?php echo $this->htmlEscape($this->getMethod()->getTitle()) ?><br />
-<?php if ($this->getInfo()->getLastTransId() != ''): ?>
-    <?php echo Mage::helper('saferpay_be')->__('Saferpay Transaction ID: %s', $this->htmlEscape($this->getInfo()->getLastTransId())) ?><br />
+<?php $info = $this->getInfo(); ?>
+<?php if ($info->getAdditionalInformation('card_brand') != ''): ?>
+    <?php echo $this->htmlEscape($info->getAdditionalInformation('card_brand')) . ' ' . $this->htmlEscape($info->getAdditionalInformation('card_mask')) . ' (' . $this->htmlEscape($info->getAdditionalInformation('expiry_month')) . '/' . $this->htmlEscape($info->getAdditionalInformation('expiry_year')) . ')'; ?><br/>
 <?php endif; ?>

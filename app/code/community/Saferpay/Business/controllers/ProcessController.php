@@ -43,6 +43,45 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 		$this->_processMpiResponse();
 	}
 
+	public function savedCardAction()
+	{
+		try
+		{
+			$method = $this->_getPayment();
+			if ($method->getCode() == 'saferpaybe_cc')
+			{
+				$flags = $method->get3DSecureFlags();
+				if ($flags->getEci() === Saferpay_Business_Model_Cc::ECI_ENROLLED)
+				{
+					$this->_redirect('*/*/mpiRedirect', array('_secure' => true));
+					
+					return;
+				}
+			}
+
+			$this->_executePayment();
+			return;
+		}
+		catch (Mage_Core_Exception $e)
+		{
+			Mage::logException($e);
+			Mage::helper('checkout')->sendPaymentFailedEmail($this->_getSession()->getQuote(), $e->getMessage());
+			$this->_getSession()->addError($e->getMessage());
+		}
+		catch (Exception $e)
+		{
+			Mage::logException($e);
+			Mage::helper('checkout')->sendPaymentFailedEmail(
+				$this->_getSession()->getQuote(),
+				Mage::helper('saferpay_be')->__("An error occures while processing the payment: %s", print_r($e, 1))
+			);
+			$this->_getSession()->addError(
+				Mage::helper('saferpay_be')->__('An error occured while processing the payment, please contact the store owner for assistance.')
+			);			
+		}
+		$this->_redirect('checkout/cart');
+	}
+
 	/**
 	 * Handle the case when a customer cancelles a 3D-secure authentication
 	 */

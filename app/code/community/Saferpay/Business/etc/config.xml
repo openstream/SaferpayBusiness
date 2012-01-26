@@ -182,6 +182,7 @@
 				<active>0</active>
 				<model>saferpay_be/cc</model>
 				<title>Credit Card</title>
+				<saved_cards>0</saved_cards>
 				<cctypes>TC</cctypes>
 				<allowspecific>0</allowspecific>
 				<generic_error_msg><![CDATA[An error occured while processing the payment, please try again later.]]></generic_error_msg>

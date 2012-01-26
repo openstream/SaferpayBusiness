@@ -24,6 +24,16 @@ if(typeof Saferpay == 'undefined') {
 
 Saferpay.Business = Class.create({
 	initialize: function() {
+		if ($('saferpaybe_cc_saved_card')) {
+			this.switchSavedCards();
+			if (payment) {
+				payment.addAfterInitFunction('saferpaybe_cc_saved_card', function () {
+					this.switchSavedCards();
+					Event.observe($('saferpaybe_cc_saved_card'), 'change', this.switchSavedCards);
+					Event.observe($('payment_form_saferpaybe_cc'), 'payment-method:switched', this.switchSavedCards);
+				}.bind(this));
+			}
+		}
 		var obj1 = typeof payment == 'undefined' ? Payment.prototype : payment;
 		if(typeof obj1.save != 'undefined'){
 			obj1.save = obj1.save.wrap(function (origMethod) {
@@ -103,6 +113,17 @@ Saferpay.Business = Class.create({
 			});
 		}
 	},
+	switchSavedCards: function() {
+		if ($('saferpaybe_cc_saved_card').value == '') {
+			$$('#payment_form_saferpaybe_cc li').each(Element.show);
+		} else {
+			var data = $('saferpaybe_cc_saved_card').value.evalJSON(true)
+			if (data) {
+				$('saferpaybe_cc_cc_type').value = data.cc_type;
+			}
+			$$('#payment_form_saferpaybe_cc li:not(.saferpay_be_saved_cards)').each(Element.hide);
+		}
+	},
 	disableFields: function(mode) {
 		if (typeof mode == 'undefined') mode = true;
 		var form = $('payment_form_' + payment.currentMethod);
@@ -149,7 +170,7 @@ Saferpay.Business = Class.create({
 	{
 		//console.debug('updateReviewResponse');
 		var transport;
-	    if (request.transport) transport = request.transport;
+		if (request.transport) transport = request.transport;
 		else transport = false;
 		saferpay.processReviewResponse(review.nextStep, transport);
 	},
