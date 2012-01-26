@@ -84,4 +84,20 @@ class Saferpay_Business_Helper_Data extends Mage_Core_Helper_Data
 	{
 		return Zend_Locale_Math::round($value, 2);
 	}
+	
+	/**
+	 * Return the attributes as an array that are part of the saferpay xml response
+	 *
+	 * @param string $xml
+	 * @return array
+	 */
+	public function _parseResponseXml($xml)
+	{
+		if($xml && $xml = simplexml_load_string($xml)){
+			$data = (array)$xml->attributes();
+			return $data['@attributes'];
+		}else{
+			return array();
+		}
+	}
 }

@@ -47,7 +47,8 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	protected $_canAuthorize           = false;
 	protected $_canCapture             = true;
 	protected $_canCapturePartial      = true;
-	protected $_canRefund              = false;
+	protected $_canRefund              = true;
+	protected $_canRefundInvoicePartial = true;
 	protected $_canVoid                = false;
 	protected $_canUseInternal         = false;
 	protected $_canUseCheckout         = true;
@@ -136,7 +137,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	 */
 	public function importRegisterResponseData($data)
 	{
-		$data = $this->_parseResponseXml($data);
+		$data = Mage::helper('saferpay_be')->_parseResponseXml($data);
 		
 		$this->validateRegisterResponseData($data);
 		$this->addPaymentInfoData(array(
@@ -160,7 +161,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	 */
 	public function importMpiResponseData($data)
 	{
-		$data = $this->_parseResponseXml($data);
+		$data = Mage::helper('saferpay_be')->_parseResponseXml($data);
 
 		$this->validateMpiResponseData($data);
 
@@ -291,7 +292,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			$url = $this->_getVerify3DSecureUrl();
 			$response = trim($this->_readUrl($url));
 			list($status, $xml) = $this->_splitResponseData($response);
-			$data = $this->_parseResponseXml($xml);
+			$data = Mage::helper('saferpay_be')->_parseResponseXml($xml);
 			$this->_validate3DSecureInitResponse($status, $data);
 
 			if (isset($data['MPI_SESSIONID']))
@@ -522,5 +523,82 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		}
 		$url = $this->_appendQueryParams($url, $params);
 		return parent::_appendAuthorizeUrlParams($url, $payment, $amount);
+	}
+
+	/**
+	 * refund the amount with transaction id
+	 *
+	 * @access public
+	 * @param string $payment Varien_Object object
+	 * @return Mage_Payment_Model_Abstract
+	 */
+	public function refund(Varien_Object $payment, $amount) {
+
+		$order = $payment->getOrder();
+
+		$params = array(
+			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
+			'AMOUNT' => ($amount * 100),
+			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
+			'CARDREFID' => $payment->getAdditionalInformation('card_ref_id'),
+			'EXP' => $payment->getAdditionalInformation('expiry_month') . $payment->getAdditionalInformation('expiry_year'),
+			'DESCRIPTION' => 'Refunding order ' . $order->getIncrementId(),
+			'REFOID' => $order->getIncrementId(),
+			'ACTION' => 'Credit',
+			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password')
+		);
+
+		Mage::log('Refunding payment for order #'.$order->getIncrementId().': '. print_r($params, true), Zend_Log::DEBUG, 'saferpay_be.log');
+
+		$url = Mage::getStoreConfig('saferpay/settings/execute_base_url');
+		$url = $this->_appendQueryParams($url, $params);
+
+		$response = trim($this->_readUrl($url));
+		list($status, $xml) = $this->_splitResponseData($response);
+
+		if ($status != 'OK')
+		{
+			$this->_throwException($xml);
+		}
+
+		$data = Mage::helper('saferpay_be')->_parseResponseXml($xml);
+
+		$id = '';
+		// check saferpay result code of authorization (0 = success)
+		if ($data['RESULT'] == 0) {
+			$id = $data['ID'];
+			Mage::log('Refunded #'.$order->getIncrementId().': ' . print_r($data, true), Zend_Log::DEBUG, 'saferpay_be.log');
+		} else {
+			Mage::log('Refund #'.$id.' failed (result code ' . $data['RESULT'] . ') : '. $response, Zend_Log::ERR, 'saferpay_be.log');
+			$this->_throwException('Refund failed (result code ' . $data['RESULT'] . ')');
+		}
+
+		$payment->setLastTransId($id);
+		$params = array(
+			'ACCOUNTID' => Mage::getStoreConfig('saferpay/settings/saferpay_account_id'),
+			'ID' => $id,
+			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password')
+		);
+
+		Mage::log('Finishing refunding #'.$order->getIncrementId().': ' . print_r($params, true), Zend_Log::DEBUG, 'saferpay_be.log');
+
+		$url = Mage::getStoreConfig('saferpay/settings/paycomplete_base_url');
+		$url = $this->_appendQueryParams($url, $params);
+
+		$response = trim($this->_readUrl($url));
+		list($status, $xml) = $this->_splitResponseData($response);
+
+		if ($status != 'OK')
+		{
+			$this->_throwException($xml);
+		}
+		$payment->setStatus(self::STATUS_SUCCESS);
+
+		$amount = Mage::helper('core')->formatPrice(Mage::helper('saferpay_be')->round($amount, 2), false);
+		$this->getOrder()->addStatusHistoryComment(
+				Mage::helper('saferpay_be')->__('Refund for %s successfull (ID %s)', $amount, $id)
+			)->save(); // save history model
+
+		return $this;
 	}
 }

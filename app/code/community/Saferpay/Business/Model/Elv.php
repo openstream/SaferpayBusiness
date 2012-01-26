@@ -58,7 +58,7 @@ class Saferpay_Business_Model_Elv extends Saferpay_Business_Model_Abstract
 	 */
 	public function importRegisterResponseData($data)
 	{
-		$data = $this->_parseResponseXml($data);
+		$data = Mage::helper('saferpay_be')->_parseResponseXml($data);
 
 		$this->validateRegisterResponseData($data);
 

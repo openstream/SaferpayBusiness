@@ -1,0 +1,25 @@
+Official Saferpay Business Magento Payment Extension
+
+Please read this form beginning to end, especially the part about PCI compliance!
+
+With Saferpay Business you can process payments in a fully integrated manner directly in your Web shop. Credit cards can be authorized directly from your store according to the latest security standards, including Verified by Visa or MasterCard SecureCode. Saferpay Business provides the following services for you:
+
+- Acceptance of all popular payment means
+- Payment processing in multiple currencies
+- 3-D Secure technology for greater payment security
+- PCI DSS compliance using Saferpay Secure Card Data
+
+INSTALLATION
+
+1. Grab the extension key from Magento Connect and install the extension directly from your Magento admin tool
+2. Log out from Magento admin and re-login
+3. Go to System / Configuration / Sales/Saferpay and enter your Account ID and Hosting Password
+4. Go to System / Configuration / Sales/Payment Methods and and configure CreditCard Payment (via Saferpay) and ELV (via Saferpay)
+
+PCI COMPLIANCE
+
+This extension does neither store your customer's credit card information in the Magento database, nor save it to the browser session. The data entered during the checkout is directly being sent to the Saferpay server which returns a credit card reference ID which will then be used to process the order. As a store owner this means that you do not have to worry about getting PCI certified yourself, although a basic PCI assessment is still required, but this assessmnent only contains a couple dozen questions instead of a couple hundred in the case of full PCI certification!
+
+If you are using additional Magento extensions, e.g. to provide a simplified checkout, you have to make sure that this extension does not interfere with ths extension's approach of adhering to PCI compliance. In order to understand the details you have to be a PHP developer. We therefore highly recommend that you make sure you know what you're doing!
+
+Rest assured that if you're using the default Magento One Page Checkout, you're on the safe side.
