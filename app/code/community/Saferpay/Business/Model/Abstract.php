@@ -116,24 +116,6 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	}
 
 	/**
-	 * Return the attributes as an array that are part of the saferpay xml response
-	 *
-	 * @param string $xml
-	 * @return array
-	 */
-	protected function _parseResponseXml($xml)
-	{
-		$data = array();
-		if ($xml)
-		{
-			$xml = simplexml_load_string($xml);
-			$data = (array) $xml->attributes();
-			$data = $data['@attributes'];
-		}
-		return $data;
-	}
-
-	/**
 	 * Append the array of parameters to the given URL string
 	 *
 	 * @param string $url
@@ -389,7 +371,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		{
 			$this->_throwException($xml);
 		}
-		$data = $this->_parseResponseXml($xml);
+		$data = Mage::helper('saferpay_be')->_parseResponseXml($xml);
 		$this->_validateAuthorizationResponse($status, $data);
 
 		/*
@@ -535,7 +517,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		$url = $this->_getCaptureUrl($payment, $amount);
 		$response = trim($this->_readUrl($url));
 		list($status, $xml) = $this->_splitResponseData($response);
-		$data = $this->_parseResponseXml($xml);
+		$data = Mage::helper('saferpay_be')->_parseResponseXml($xml);
 		$this->_validateCaptureResponse($status, $data);
 
 		return $this;

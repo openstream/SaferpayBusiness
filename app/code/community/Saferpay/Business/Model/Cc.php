@@ -115,7 +115,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	 */
 	public function importRegisterResponseData($data)
 	{
-		$data = $this->_parseResponseXml($data);
+		$data = Mage::helper('saferpay_be')->_parseResponseXml($data);
 		
 		$this->validateRegisterResponseData($data);
 		$this->addPaymentInfoData(array(
@@ -139,7 +139,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	 */
 	public function importMpiResponseData($data)
 	{
-		$data = $this->_parseResponseXml($data);
+		$data = Mage::helper('saferpay_be')->_parseResponseXml($data);
 
 		$this->validateMpiResponseData($data);
 
@@ -270,7 +270,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			$url = $this->_getVerify3DSecureUrl();
 			$response = trim($this->_readUrl($url));
 			list($status, $xml) = $this->_splitResponseData($response);
-			$data = $this->_parseResponseXml($xml);
+			$data = Mage::helper('saferpay_be')->_parseResponseXml($xml);
 			$this->_validate3DSecureInitResponse($status, $data);
 
 			if (isset($data['MPI_SESSIONID']))
@@ -539,7 +539,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			$this->_throwException($xml);
 		}
 
-		$data = $this->_parseResponseXml($xml);
+		$data = Mage::helper('saferpay_be')->_parseResponseXml($xml);
 
 		$id = '';
 		// check saferpay result code of authorization (0 = success)
