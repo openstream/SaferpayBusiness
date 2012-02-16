@@ -137,10 +137,12 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 	{
 		try
 		{
-			$this->_verifySignature();
-			$this->_getPayment()->importMpiResponseData($this->getRequest()->getParam('DATA', ''));
-			$this->_executePayment();
-			return;
+			if($this->_getPayment()->getOrder()->getState() != 'processing'){
+				$this->_verifySignature();
+				$this->_getPayment()->importMpiResponseData($this->getRequest()->getParam('DATA', ''));
+				$this->_executePayment();
+				return;
+			}
 		}
 		catch (Mage_Core_Exception $e)
 		{
@@ -169,23 +171,25 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 	{
 		try
 		{
-			$this->_verifySignature();
-			$method = $this->_getPayment();
-			$method->importRegisterResponseData($this->getRequest()->getParam('DATA', ''));
-			if ($method->getCode() == 'saferpaybe_cc')
-			{
-				$method->setCvc($this->getRequest()->getParam($method->getCvcParamName(), ''));
-				$flags = $method->get3DSecureFlags();
-				if ($flags->getEci() === Saferpay_Business_Model_Cc::ECI_ENROLLED)
+			if($this->_getPayment()->getOrder()->getState() != 'processing'){
+				$this->_verifySignature();
+				$method = $this->_getPayment();
+				$method->importRegisterResponseData($this->getRequest()->getParam('DATA', ''));
+				if ($method->getCode() == 'saferpaybe_cc')
 				{
-					$this->_redirect('*/*/mpiRedirect', array('_secure' => true));
-					
-					return;
+					$method->setCvc($this->getRequest()->getParam($method->getCvcParamName(), ''));
+					$flags = $method->get3DSecureFlags();
+					if ($flags->getEci() === Saferpay_Business_Model_Cc::ECI_ENROLLED)
+					{
+						$this->_redirect('*/*/mpiRedirect', array('_secure' => true));
+						
+						return;
+					}
 				}
+	
+				$this->_executePayment();
+				return;
 			}
-
-			$this->_executePayment();
-			return;
 		}
 		catch (Mage_Core_Exception $e)
 		{
