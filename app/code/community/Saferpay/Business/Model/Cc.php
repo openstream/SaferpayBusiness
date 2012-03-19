@@ -54,8 +54,6 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 	protected $_canUseCheckout         = true;
 	protected $_canUseForMultishipping = false;
 
-	protected $_cvcParamName = 'sfpCardCvc';
-
 	/**
 	 * Array with language codes supported by the MPI 3D-Secure API.
 	 * The first entry is the default if the order store locale is not supported.
@@ -79,45 +77,14 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		return $url;
 	}
 
-	/**
-	 * Return the query parameter name for the CVC parameter
-	 *
-	 * @return string
-	 */
-	public function getCvcParamName()
-	{
-		return $this->_cvcParamName;
-	}
-
-	/**
-	 * Save the credit card cvc code in the customer session
-	 *
-	 * @param string $cvc
-	 * @return Saferpay_Business_Model_Cc
-	 */
-	public function setCvc($cvc)
-	{
-		$this->getSession()->setSpCvc($cvc);
-		return $this;
-	}
-
-	/**
-	 * Return the credit card cvc code saved in the customer session
-	 *
-	 * @return string
-	 */
-	public function getCvc()
-	{
-		return $this->getSession()->getSpCvc();
-	}
-
 	public function assignData($data) {
 		if (!($data instanceof Varien_Object)) {
 			$data = new Varien_Object($data);
 		}
 		parent::assignData($data);
 
-		$this->setCvc($data->getCcCid());
+Mage::log(__METHOD__);
+Mage::log($data->getCcCid());
 
 		$savedCard = $data->getSavedCard();
 		if ($savedCard = json_decode($savedCard, true)) {
@@ -488,7 +455,6 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 				->setEmailSent(true)
 				->save();
 		}
-		$this->setCvc(null);
 		
 		return $this;
 	}
@@ -506,7 +472,6 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		$eci = $this->getPaymentInfoData('eci', $payment);
 		$params = array(
 			'EXP'  => $this->getPaymentInfoData('expiry_month').$this->getPaymentInfoData('expiry_year'),
-			'CVC'  => $this->getCvc(),
 			'NAME' => htmlentities($payment->getCcOwner(), ENT_COMPAT, 'UTF-8'),
 			'ECI'  => $eci,
 			'MPI_SESSIONID' => $this->getPaymentInfoData('mpi_session_id', $payment),

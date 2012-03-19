@@ -177,7 +177,6 @@ class Saferpay_Business_ProcessController extends Mage_Core_Controller_Front_Act
 				$method->importRegisterResponseData($this->getRequest()->getParam('DATA', ''));
 				if ($method->getCode() == 'saferpaybe_cc')
 				{
-					$method->setCvc($this->getRequest()->getParam($method->getCvcParamName(), ''));
 					$flags = $method->get3DSecureFlags();
 					if ($flags->getEci() === Saferpay_Business_Model_Cc::ECI_ENROLLED)
 					{
