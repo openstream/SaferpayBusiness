@@ -83,9 +83,6 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		}
 		parent::assignData($data);
 
-Mage::log(__METHOD__);
-Mage::log($data->getCcCid());
-
 		$savedCard = $data->getSavedCard();
 		if ($savedCard = json_decode($savedCard, true)) {
 			foreach ($savedCard as $key => $value) {
