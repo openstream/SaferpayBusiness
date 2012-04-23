@@ -427,7 +427,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 			$this->_checkAllowPaymentsWithoutLiabilityShift();
 		}
 
-		$this->authorize($this->getInfoInstance(), $this->getOrder()->getGrandTotal());
+		$this->authorize($this->getInfoInstance(), $this->getOrder()->getBaseGrandTotal());
 
 		/*
 		 * Again, check if ECI == 0! ECI state can change during authorization.

@@ -330,7 +330,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 			'spPassword' => Mage::getStoreConfig('saferpay/settings/saferpay_password'),
 			'CARDREFID' => $this->getPaymentInfoData('card_ref_id', $payment),
 			'AMOUNT' => intval(Mage::helper('saferpay_be')->round($amount, 2) * 100),
-			'CURRENCY' => $this->getOrder()->getOrderCurrencyCode(),
+			'CURRENCY' => Mage::app()->getStore()->getBaseCurrencyCode(),
 			'ORDERID' => $this->getOrder()->getRealOrderId(),
 			'DESCRIPTION' => Mage::getStoreConfig('general/store_information/name', $this->getOrder()->getStoreId()),
 		);
