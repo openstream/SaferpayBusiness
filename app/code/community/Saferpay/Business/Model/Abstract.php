@@ -400,7 +400,9 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 				'auth_code' => $authcode,
 			), $payment);
 
+
 		$payment->setTransactionId($data['ID']);
+
 		$payment->addTransaction(Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE);
 		$payment->setStatus(self::STATUS_APPROVED)
 			->setIsTransactionClosed(0);
@@ -519,8 +521,8 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 		$url = $this->_getCaptureUrl($payment, $amount);
 		$response = trim($this->_readUrl($url));
 		list($status, $xml) = $this->_splitResponseData($response);
-		$data = Mage::helper('saferpay_be')->_parseResponseXml($xml);
-		$this->_validateCaptureResponse($status, $data);
+		$data = preg_match('/^</ism', $xml) ? Mage::helper('saferpay_be')->_parseResponseXml($xml) : $xml;
+		$this->_validateCaptureResponse($payment, $status, $data);
 
 		return $this;
 	}
@@ -528,11 +530,12 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	/**
 	 * Validate a capture request response
 	 *
+	 * @param Varien_Object $payment
 	 * @param string $status
 	 * @param array $data
 	 * @return Saferpay_Business_Model_Abstract
 	 */
-	protected function _validateCaptureResponse($status, $data)
+	protected function _validateCaptureResponse(Varien_Object $payment, $status, $response)
 	{
 		if (
 			$status != 'OK'
