@@ -42,6 +42,13 @@
 				<class>Saferpay_Business_Helper</class>
 			</saferpay_be>
 		</helpers>
+        <resources>
+            <business_setup>
+                <setup>
+                    <module>Saferpay_Business</module>
+                </setup>
+            </business_setup>
+        </resources>
 		<saferpay_be>
 			<cc>
 				<types>
