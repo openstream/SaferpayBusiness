@@ -174,7 +174,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		}
 		if (! isset($data['MSGTYPE']) || $data['MSGTYPE'] != 'AuthenticationConfirm')
 		{
-			$this->_throwException('Recieved unexpected Message Type: expected "AuthenticationConfirm"');
+			$this->_throwException('Received unexpected Message Type: expected "AuthenticationConfirm"');
 		}
 
 		return $this;
@@ -558,7 +558,7 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 
 		$amount = Mage::helper('core')->formatPrice(Mage::helper('saferpay_be')->round($amount, 2), false);
 		$this->getOrder()->addStatusHistoryComment(
-				Mage::helper('saferpay_be')->__('Refund for %s successfull (ID %s)', $amount, $id)
+				Mage::helper('saferpay_be')->__('Refund for %s successful (ID %s)', $amount, $id)
 			)->save(); // save history model
 
 		return $this;

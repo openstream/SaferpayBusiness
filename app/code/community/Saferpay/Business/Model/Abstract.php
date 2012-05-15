@@ -412,7 +412,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 			$this->getOrder()->setState(self::STATE_AUTHORIZED, self::STATE_AUTHORIZED);
 		}
 		$this->getOrder()->addStatusHistoryComment(
-				Mage::helper('saferpay_be')->__('Authorization for %s successfull (AUTHCODE %s, ID %s)', $amount, $authcode, $data['ID'])
+				Mage::helper('saferpay_be')->__('Authorization for %s successful (AUTHCODE %s, ID %s)', $amount, $authcode, $data['ID'])
 			)->save(); // save history model
 
 		$this->getOrder()->save();
@@ -466,7 +466,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 			}
 			if ($data['ORDERID'] != $this->getOrder()->getRealOrderId())
 			{
-				$msg = Mage::helper('saferpay_be')->__('Error: authorization requested for order "%s", recieved authorization for order id "%s"',
+				$msg = Mage::helper('saferpay_be')->__('Error: authorization requested for order "%s", received authorization for order id "%s"',
 					$this->getOrder()->getRealOrderId(),
 					$data['ORDERID']
 				);
