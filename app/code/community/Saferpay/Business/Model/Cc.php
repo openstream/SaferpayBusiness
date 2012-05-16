@@ -446,13 +446,12 @@ class Saferpay_Business_Model_Cc extends Saferpay_Business_Model_Abstract
 		if ($this->getConfigPaymentAction() == self::ACTION_AUTHORIZE_CAPTURE)
 		{
 			$this->_createInvoice();
-			
-			$this->getOrder()
-				->sendNewOrderEmail()
-				->setEmailSent(true)
-				->save();
-		}
-		
+        }
+		$this->getOrder()
+			 ->sendNewOrderEmail()
+			 ->setEmailSent(true)
+			 ->save();
+
 		return $this;
 	}
 
