@@ -439,6 +439,8 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 	 */
 	protected function _validateAuthorizationResponse($status, $data)
 	{
+        /** @var $helper Saferpay_Business_Helper_Data */
+        $helper = Mage::helper('saferpay_be');
 		try
 		{
 			if (
@@ -448,7 +450,7 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 				$data['MSGTYPE'] != 'AuthorizationResponse'
 			)
 			{
-				$msg = Mage::helper('saferpay_be')->__('Error parsing response: %s', print_r($data, true));
+				$msg = $helper->__('Error parsing response: %s', print_r($data, true));
 				Mage::throwException($msg);
 			}
 			if ($data['RESULT'] !== '0')
@@ -459,14 +461,14 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 				}
 				else
 				{
-					$msg = Mage::helper('saferpay_be')->__('Error authorizing payment: %s', print_r($data, true));
+					$msg = $helper->__('Error authorizing payment: %s', print_r($data, true));
 				}
 				Mage::log(array('Authorization response error data' => $data));
 				Mage::throwException($msg);
 			}
 			if ($data['ORDERID'] != $this->getOrder()->getRealOrderId())
 			{
-				$msg = Mage::helper('saferpay_be')->__('Error: authorization requested for order "%s", received authorization for order id "%s"',
+				$msg = $helper->__('Error: authorization requested for order "%s", received authorization for order id "%s"',
 					$this->getOrder()->getRealOrderId(),
 					$data['ORDERID']
 				);
@@ -478,9 +480,9 @@ abstract class Saferpay_Business_Model_Abstract extends Mage_Payment_Model_Metho
 			/*
 			 * Add error message to order comment history
 			 */
-			$msg = (int)$e->getMessage() ? Mage::helper('saferpay_be')->__(Mage::helper('saferpay_be')->error_code[$e->getMessage()]) : $e->getMessage();
+			$msg = (int)$e->getMessage() ? $helper->__($helper->error_code[$e->getMessage()]) : $e->getMessage();
 			$this->getOrder()->cancel()
-				  			 ->setState(self::STATE_CANCELED_SAFERPAY, self::STATE_CANCELED_SAFERPAY, $msg)
+				  			 ->setState('canceled', self::STATE_CANCELED_SAFERPAY, $msg)
 				  			 ->save();
 			throw $e;
 		}
