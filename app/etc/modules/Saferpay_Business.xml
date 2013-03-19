@@ -26,7 +26,7 @@
 			<active>true</active>
 			<codePool>community</codePool>
 			<depends>
-				<Mage_Payment />
+				<Mage_Sales />
 			</depends>
 		</Saferpay_Business>
 	</modules>
