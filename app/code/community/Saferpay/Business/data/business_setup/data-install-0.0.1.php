@@ -3,10 +3,9 @@
 $magentoVersion = Mage::getVersionInfo();
 $is_enterprise = Mage::helper('core')->isModuleEnabled('Enterprise_Enterprise');
 
-// Installer is not needed for versions older then CE 1.5.0.0 or EE 1.10.0.0
-// Use data setup for versions CE 1.6.0.0 or EE 1.11.0.0 and up
-if (($is_enterprise && $magentoVersion['major'] < 2 && ($magentoVersion['minor'] == 10)) ||
-    (!$is_enterprise && $magentoVersion['major'] < 2 && ($magentoVersion['minor'] == 5))) {
+// Use this data setup for versions CE 1.6.0.0 or EE 1.11.0.0 and up
+if(($is_enterprise && $magentoVersion['major'] < 2 && $magentoVersion['minor'] > 10) ||
+    (!$is_enterprise && $magentoVersion['major'] < 2 && $magentoVersion['minor'] > 5)) {
 
     $installer = $this;
     /* @var $installer Mage_Core_Model_Resource_Setup */
